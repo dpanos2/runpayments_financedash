@@ -1,0 +1,1624 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>run payments — P&L Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.5.1" integrity="sha384-jb8JQMbMoBUzgWatfe6COACi2ljcDdZQ2OxczGA3bGNeWe+6DChMTBJemed7ZnvJ" crossorigin="anonymous"></script>
+    <style>
+        :root {
+            /* Run Payments Brand Colors */
+            --run-plum:    #22004B;   /* Dark Plum — primary */
+            --run-purple:  #A31FFF;   /* Brand Purple */
+            --run-cobalt:  #4B3FFF;   /* Relay Cobalt */
+            --run-red:     #F6025E;   /* Javelin Red */
+            --run-orange:  #FF6A00;   /* Sprint Orange */
+
+            /* Dashboard tokens */
+            --bg:     #F4EFFF;        /* Light lavender page bg */
+            --card:   #FFFFFF;
+            --header: #22004B;        /* Dark Plum */
+            --accent: #A31FFF;        /* Brand Purple */
+            --accent2:#4B3FFF;        /* Relay Cobalt */
+            --danger: #F6025E;        /* Javelin Red */
+            --warn:   #FF6A00;        /* Sprint Orange */
+            --text:   #22004B;        /* Dark Plum text */
+            --muted:  #7B6995;        /* Muted plum-gray */
+            --border: #E8E0F5;        /* Light purple border */
+            --radius: 12px;
+            --gap:    16px;
+
+            /* Chart palette */
+            --c1: #22004B;   /* Dark Plum */
+            --c2: #A31FFF;   /* Brand Purple */
+            --c3: #4B3FFF;   /* Relay Cobalt */
+            --c4: #FF6A00;   /* Sprint Orange */
+            --c5: #F6025E;   /* Javelin Red */
+            --c6: #CC00CC;   /* Magenta */
+
+            /* Functional colors (kept readable) */
+            --pos-color: #16a34a;
+            --neg-color: #F6025E;
+        }
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body { font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background:var(--bg); color:var(--text); font-size:14px; }
+
+        /* LAYOUT */
+        .wrap { max-width:1440px; margin:0 auto; padding:var(--gap); }
+
+        /* HEADER — Dark Plum with subtle track-line pattern overlay */
+        .header {
+            background: var(--run-plum);
+            background-image:
+                radial-gradient(ellipse at 85% 50%, rgba(163,31,255,0.18) 0%, transparent 60%),
+                radial-gradient(ellipse at 15% 80%, rgba(75,63,255,0.12) 0%, transparent 50%);
+            color:#fff;
+            border-radius:var(--radius);
+            padding:22px 32px;
+            margin-bottom:var(--gap);
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+            flex-wrap:wrap;
+            gap:12px;
+            border-bottom:3px solid var(--run-purple);
+        }
+        .header-brand { display:flex; flex-direction:column; gap:2px; }
+        .header h1 {
+            font-size:22px;
+            font-weight:800;
+            letter-spacing:-.5px;
+            display:flex;
+            align-items:baseline;
+            gap:6px;
+        }
+        .header h1 .brand-run { font-weight:800; color:#fff; }
+        .header h1 .brand-label { font-weight:400; color:rgba(255,255,255,0.7); font-size:16px; }
+        .header .sub { font-size:12px; color:rgba(255,255,255,.45); margin-top:2px; letter-spacing:.2px; }
+
+        .filters { display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
+        .filter-grp { display:flex; flex-direction:column; gap:3px; }
+        .filter-grp label { font-size:10px; color:rgba(255,255,255,.55); text-transform:uppercase; letter-spacing:.5px; font-weight:600; }
+        .filter-grp select {
+            padding:7px 12px;
+            border:1px solid rgba(163,31,255,0.4);
+            border-radius:8px;
+            background:rgba(255,255,255,.08);
+            color:#fff;
+            font-size:13px;
+            cursor:pointer;
+            font-family: inherit;
+            font-weight:500;
+            backdrop-filter: blur(4px);
+        }
+        .filter-grp select option { background:#22004B; }
+
+        /* KPI ROW */
+        .kpi-row { display:grid; grid-template-columns:repeat(6,1fr); gap:var(--gap); margin-bottom:var(--gap); }
+        .kpi {
+            background:var(--card);
+            border-radius:var(--radius);
+            padding:18px 20px;
+            box-shadow:0 2px 8px rgba(34,0,75,.07), 0 1px 2px rgba(34,0,75,.04);
+            border-left:4px solid transparent;
+            transition: transform .15s, box-shadow .15s;
+        }
+        .kpi:hover { transform:translateY(-2px); box-shadow:0 6px 20px rgba(34,0,75,.10); }
+        .kpi.blue   { border-color:var(--c1); }
+        .kpi.green  { border-color:var(--pos-color); }
+        .kpi.red    { border-color:var(--c5); }
+        .kpi.orange { border-color:var(--c4); }
+        .kpi.purple { border-color:var(--c2); }
+        .kpi.pink   { border-color:var(--c6); }
+        .kpi-label { font-size:10.5px; text-transform:uppercase; letter-spacing:.6px; color:var(--muted); margin-bottom:7px; font-weight:600; }
+        .kpi-val { font-size:24px; font-weight:800; line-height:1; margin-bottom:6px; color:var(--run-plum); }
+        .kpi-change { font-size:11.5px; font-weight:600; }
+        .pos { color:var(--pos-color); }
+        .neg { color:var(--neg-color); }
+        .neu { color:var(--muted); }
+
+        /* CHART GRID */
+        .chart-row { display:grid; gap:var(--gap); margin-bottom:var(--gap); }
+        .charts-2 { grid-template-columns:1fr 1fr; }
+        .charts-3 { grid-template-columns:2fr 1fr 1fr; }
+        .charts-13 { grid-template-columns: 3fr 2fr; }
+        .chart-box {
+            background:var(--card);
+            border-radius:var(--radius);
+            padding:22px 26px;
+            box-shadow:0 2px 8px rgba(34,0,75,.06), 0 1px 2px rgba(34,0,75,.03);
+        }
+        .chart-box h3 {
+            font-size:12.5px;
+            font-weight:700;
+            color:var(--run-plum);
+            margin-bottom:18px;
+            display:flex;
+            align-items:center;
+            gap:8px;
+            text-transform:uppercase;
+            letter-spacing:.5px;
+        }
+        .chart-box h3 .badge {
+            font-size:10px;
+            font-weight:600;
+            padding:2px 8px;
+            border-radius:99px;
+            background:rgba(163,31,255,.1);
+            color:var(--run-purple);
+            text-transform:none;
+            letter-spacing:0;
+        }
+        .chart-box canvas { max-height:280px; }
+
+        /* TABLE */
+        .tbl-box {
+            background:var(--card);
+            border-radius:var(--radius);
+            padding:22px 26px;
+            box-shadow:0 2px 8px rgba(34,0,75,.06), 0 1px 2px rgba(34,0,75,.03);
+            margin-bottom:var(--gap);
+            overflow-x:auto;
+        }
+        .tbl-box h3 {
+            font-size:12.5px;
+            font-weight:700;
+            margin-bottom:16px;
+            color:var(--run-plum);
+            text-transform:uppercase;
+            letter-spacing:.5px;
+        }
+        table { width:100%; border-collapse:collapse; font-size:12.5px; }
+        th {
+            text-align:left;
+            padding:9px 12px;
+            background: var(--run-plum);
+            color:rgba(255,255,255,.8);
+            font-size:10.5px;
+            font-weight:700;
+            text-transform:uppercase;
+            letter-spacing:.5px;
+            white-space:nowrap;
+        }
+        th:first-child { border-radius:8px 0 0 0; }
+        th:last-child  { border-radius:0 8px 0 0; }
+        td { padding:9px 12px; border-bottom:1px solid var(--border); white-space:nowrap; color:var(--text); }
+        tr:last-child td { border-bottom:none; }
+        tr:nth-child(even) td { background:rgba(244,239,255,.4); }
+        tr:hover td { background:rgba(163,31,255,.05); }
+        .num { text-align:right; font-variant-numeric:tabular-nums; }
+        .bold { font-weight:700; }
+        .indent { padding-left:24px; }
+        .section-header td {
+            background: rgba(34,0,75,.06);
+            font-weight:700;
+            font-size:10.5px;
+            text-transform:uppercase;
+            letter-spacing:.5px;
+            color:var(--run-plum);
+            padding:7px 12px;
+        }
+        .total-row td { font-weight:700; border-top:2px solid var(--border); background:rgba(75,63,255,.08); color:var(--run-plum); }
+        .gp-row td   { font-weight:700; background:rgba(22,163,74,.07); }
+        .ni-row td   { font-weight:700; background:rgba(34,0,75,.08); color:var(--run-plum); }
+
+        /* WATERFALL */
+        .wf-bar-pos { fill:#16a34a; }
+        .wf-bar-neg { fill:#F6025E; }
+        .wf-bar-base { fill:transparent; }
+
+        /* TAGS */
+        .tag { display:inline-block; font-size:10px; font-weight:700; padding:2px 8px; border-radius:99px; letter-spacing:.3px; }
+        .tag-g { background:rgba(22,163,74,.12); color:#15803d; }
+        .tag-r { background:rgba(246,2,94,.12);  color:#c0024b; }
+        .tag-y { background:rgba(255,106,0,.12); color:#c44f00; }
+
+        /* SECTION TITLES */
+        .section-title {
+            font-size:10.5px;
+            font-weight:700;
+            text-transform:uppercase;
+            letter-spacing:.7px;
+            color:var(--muted);
+            margin-bottom:10px;
+            padding-left:2px;
+        }
+
+        footer {
+            text-align:center;
+            font-size:11px;
+            color:var(--muted);
+            padding:24px 0 12px;
+            border-top:1px solid var(--border);
+            margin-top:8px;
+        }
+        footer strong { color:var(--run-purple); }
+
+        /* TABS */
+        .tab-nav {
+            display:flex;
+            gap:2px;
+            margin-bottom:var(--gap);
+            border-bottom:2px solid var(--border);
+            padding-bottom:0;
+        }
+        .tab-btn {
+            padding:10px 22px;
+            font-size:13px;
+            font-weight:700;
+            border:none;
+            background:none;
+            cursor:pointer;
+            color:var(--muted);
+            border-bottom:2px solid transparent;
+            margin-bottom:-2px;
+            border-radius:8px 8px 0 0;
+            transition:all .15s;
+            letter-spacing:.2px;
+            font-family:inherit;
+        }
+        .tab-btn:hover { color:var(--run-plum); background:rgba(34,0,75,.05); }
+        .tab-btn.active {
+            color:var(--run-purple);
+            border-bottom-color:var(--run-purple);
+            background:rgba(163,31,255,.06);
+        }
+        .tab-panel { display:none; }
+        .tab-panel.active { display:block; }
+
+        /* COMPARE TAB */
+        .cmp-header {
+            background:var(--card);
+            border-radius:var(--radius);
+            padding:18px 26px;
+            margin-bottom:var(--gap);
+            box-shadow:0 2px 8px rgba(34,0,75,.06);
+            display:flex;
+            align-items:center;
+            gap:20px;
+            flex-wrap:wrap;
+            border-left:4px solid var(--run-purple);
+        }
+        .cmp-header label { font-size:10.5px; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:.5px; }
+        .cmp-header select {
+            padding:8px 14px;
+            border:1.5px solid var(--border);
+            border-radius:8px;
+            font-size:14px;
+            font-weight:600;
+            color:var(--run-plum);
+            cursor:pointer;
+            background:#fff;
+            font-family:inherit;
+        }
+        .cmp-header select:focus { outline:none; border-color:var(--run-purple); }
+        .period-chips { display:flex; gap:8px; flex-wrap:wrap; }
+        .chip { padding:6px 14px; border-radius:99px; font-size:12px; font-weight:700; display:flex; align-items:center; gap:6px; font-family:inherit; }
+        .chip-sel { background:rgba(163,31,255,.1); color:var(--run-plum); }
+        .chip-mom { background:rgba(255,106,0,.1); color:#b34700; }
+        .chip-yoy { background:rgba(75,63,255,.1); color:#2a1fb5; }
+        .chip-dot { width:8px; height:8px; border-radius:50%; display:inline-block; }
+
+        .cmp-kpi-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:var(--gap); margin-bottom:var(--gap); }
+        .cmp-kpi {
+            background:var(--card);
+            border-radius:var(--radius);
+            padding:18px 20px;
+            box-shadow:0 2px 8px rgba(34,0,75,.07);
+            border-left:4px solid var(--run-purple);
+        }
+        .cmp-kpi-label { font-size:10.5px; text-transform:uppercase; letter-spacing:.6px; color:var(--muted); margin-bottom:10px; font-weight:700; }
+        .cmp-kpi-main { font-size:22px; font-weight:800; margin-bottom:8px; color:var(--run-plum); }
+        .cmp-kpi-row { display:flex; justify-content:space-between; padding:4px 0; border-top:1px solid var(--border); font-size:11.5px; }
+        .cmp-kpi-row span:first-child { color:var(--muted); }
+        .delta-pos { color:#16a34a; font-weight:700; }
+        .delta-neg { color:#F6025E; font-weight:700; }
+        .delta-neu { color:var(--muted); font-weight:500; }
+
+        /* COMPARISON TABLE */
+        .cmp-tbl th { white-space:nowrap; }
+        .cmp-tbl td { white-space:nowrap; }
+        .col-sel { background:rgba(163,31,255,.04); }
+        .col-mom { background:rgba(255,106,0,.04); }
+        .col-yoy { background:rgba(75,63,255,.04); }
+        .th-sel { background:rgba(163,31,255,.15); color:var(--run-plum) !important; }
+        .th-mom { background:rgba(255,106,0,.15); color:#7a3200 !important; }
+        .th-yoy { background:rgba(75,63,255,.15); color:#1a0f80 !important; }
+        .th-delta { color:var(--muted) !important; font-size:10px; }
+
+        @media(max-width:1100px) {
+            .kpi-row { grid-template-columns:repeat(3,1fr); }
+            .charts-2,.charts-3,.charts-13 { grid-template-columns:1fr; }
+            .cmp-kpi-grid { grid-template-columns:repeat(2,1fr); }
+        }
+        @media(max-width:640px) {
+            .kpi-row { grid-template-columns:repeat(2,1fr); }
+            .cmp-kpi-grid { grid-template-columns:1fr; }
+        }
+    </style>
+</head>
+<body>
+<div class="wrap">
+
+    <!-- LOADING BANNER (shown until data arrives) -->
+    <div id="loading-banner" style="text-align:center;padding:40px 20px;font-size:14px;color:var(--muted);">
+        Loading dashboard data…
+    </div>
+
+    <!-- MAIN CONTENT (hidden until data loaded) -->
+    <div id="main-content" style="display:none">
+
+    <!-- HEADER -->
+    <div class="header">
+        <div class="header-brand">
+            <h1><span class="brand-run">run</span><span class="brand-label">payments · Profit &amp; Loss</span></h1>
+            <div class="sub" id="header-sub">Loading…</div>
+        </div>
+        <div class="filters">
+            <div class="filter-grp">
+                <label>Year</label>
+                <select id="f-year" onchange="dash.filter()">
+                    <option value="all">All Years</option>
+                    <option value="ttm">Trailing 12 Months</option>
+                    <option value="2026">2026</option>
+                    <option value="2025">2025</option>
+                    <option value="2024">2024</option>
+                    <option value="2023">2023</option>
+                </select>
+            </div>
+            <div class="filter-grp">
+                <label>View</label>
+                <select id="f-view" onchange="dash.filter()">
+                    <option value="monthly">Monthly</option>
+                    <option value="quarterly">Quarterly</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <!-- TAB NAV -->
+    <div class="tab-nav">
+        <button class="tab-btn active" onclick="switchTab('overview',this)">📊 Overview</button>
+        <button class="tab-btn" onclick="switchTab('compare',this)">🔍 Month Comparison</button>
+        <button class="tab-btn" onclick="switchTab('quarterly',this)">📅 Quarterly Comparison</button>
+    </div>
+
+    <!-- TAB: OVERVIEW -->
+    <div id="tab-overview" class="tab-panel active">
+
+    <!-- KPIs -->
+    <div class="section-title">Key Metrics</div>
+    <div class="kpi-row" id="kpi-row"></div>
+
+    <!-- ROW 1: Revenue trend + Revenue Mix -->
+    <div class="section-title">Revenue</div>
+    <div class="chart-row charts-13">
+        <div class="chart-box">
+            <h3>Revenue vs. COGS vs. Gross Profit <span class="badge">Monthly</span></h3>
+            <canvas id="c-revenue"></canvas>
+        </div>
+        <div class="chart-box">
+            <h3>Revenue Mix <span class="badge">by Processor</span></h3>
+            <canvas id="c-mix"></canvas>
+        </div>
+    </div>
+
+    <!-- ROW 2: Profitability waterfall + margins -->
+    <div class="section-title">Profitability</div>
+    <div class="chart-row charts-2">
+        <div class="chart-box">
+            <h3>Net Income Trend <span class="badge">Monthly</span></h3>
+            <canvas id="c-netincome"></canvas>
+        </div>
+        <div class="chart-box">
+            <h3>Gross Margin % &amp; COGS Ratio <span class="badge">Monthly</span></h3>
+            <canvas id="c-margins"></canvas>
+        </div>
+    </div>
+
+    <!-- ROW 3: Expenses -->
+    <div class="section-title">Operating Expenses</div>
+    <div class="chart-row charts-2">
+        <div class="chart-box">
+            <h3>Expense Breakdown <span class="badge">Stacked by Category</span></h3>
+            <canvas id="c-expenses"></canvas>
+        </div>
+        <div class="chart-box">
+            <h3>OpEx Composition <span class="badge">3-Year Total</span></h3>
+            <canvas id="c-opex-pie"></canvas>
+        </div>
+    </div>
+
+    <!-- P&L TABLE -->
+    <div class="section-title">P&L Summary Table</div>
+    <div class="tbl-box">
+        <h3>Condensed Profit &amp; Loss <span id="tbl-period" style="font-weight:400;color:var(--muted);font-size:12px;margin-left:8px;"></span></h3>
+        <div id="pl-table"></div>
+    </div>
+
+    </div><!-- /tab-overview -->
+
+    <!-- TAB: MONTH COMPARISON -->
+    <div id="tab-compare" class="tab-panel">
+
+        <!-- Period selector -->
+        <div class="cmp-header">
+            <div>
+                <label>Selected Month</label><br>
+                <select id="cmp-month" onchange="cmpDash.render()" style="margin-top:6px;">
+                </select>
+            </div>
+            <div class="period-chips" id="cmp-chips"></div>
+        </div>
+
+        <!-- KPI Cards -->
+        <div class="section-title">Snapshot Comparison</div>
+        <div class="cmp-kpi-grid" id="cmp-kpis"></div>
+
+        <!-- Bar chart comparison -->
+        <div class="section-title">Visual Comparison</div>
+        <div class="chart-row charts-2" style="margin-bottom:var(--gap)">
+            <div class="chart-box">
+                <h3>Revenue, COGS &amp; Gross Profit <span class="badge">3-Period</span></h3>
+                <canvas id="cmp-c-revbar" style="max-height:260px"></canvas>
+            </div>
+            <div class="chart-box">
+                <h3>Operating Expenses <span class="badge">3-Period</span></h3>
+                <canvas id="cmp-c-expbar" style="max-height:260px"></canvas>
+            </div>
+        </div>
+
+        <!-- Detailed P&L comparison table -->
+        <div class="section-title">Full P&L Comparison</div>
+        <div class="tbl-box">
+            <h3 id="cmp-tbl-title">Month-over-Month &amp; Year-over-Year Detail</h3>
+            <div id="cmp-pl-table"></div>
+        </div>
+
+    </div><!-- /tab-compare -->
+
+    <!-- TAB: QUARTERLY COMPARISON -->
+    <div id="tab-quarterly" class="tab-panel">
+
+        <!-- Period selector -->
+        <div class="cmp-header">
+            <div>
+                <label>Selected Quarter</label><br>
+                <select id="qtr-period" onchange="qtrDash.render()" style="margin-top:6px;">
+                </select>
+            </div>
+            <div class="period-chips" id="qtr-chips"></div>
+        </div>
+
+        <!-- KPI Cards -->
+        <div class="section-title">Snapshot Comparison</div>
+        <div class="cmp-kpi-grid" id="qtr-kpis"></div>
+
+        <!-- Bar chart comparison -->
+        <div class="section-title">Visual Comparison</div>
+        <div class="chart-row charts-2" style="margin-bottom:var(--gap)">
+            <div class="chart-box">
+                <h3>Revenue, COGS &amp; Gross Profit <span class="badge">3-Period</span></h3>
+                <canvas id="qtr-c-revbar" style="max-height:260px"></canvas>
+            </div>
+            <div class="chart-box">
+                <h3>Operating Expenses <span class="badge">3-Period</span></h3>
+                <canvas id="qtr-c-expbar" style="max-height:260px"></canvas>
+            </div>
+        </div>
+
+        <!-- Detailed P&L comparison table -->
+        <div class="section-title">Full P&L Comparison</div>
+        <div class="tbl-box">
+            <h3 id="qtr-tbl-title">Quarter-over-Quarter &amp; Year-over-Year Detail</h3>
+            <div id="qtr-pl-table"></div>
+        </div>
+
+    </div><!-- /tab-quarterly -->
+
+    <footer><strong>run payments</strong> · Accrual Basis · <span id="footer-date">–</span> · <a href="/setup" style="color:var(--run-purple);text-decoration:none;font-weight:600;">⚙ Setup</a></footer>
+
+    </div><!-- /main-content -->
+</div>
+
+<script>
+// ============================================================
+// DATA
+// ============================================================
+let RAW = [];  // populated via /api/data
+
+// ============================================================
+// HELPERS
+// ============================================================
+const COLORS = ['#22004B','#A31FFF','#4B3FFF','#FF6A00','#F6025E','#CC00CC','#16a34a','#7B6995'];
+
+function fmt(v, type='currency') {
+    if (type==='currency') {
+        const abs = Math.abs(v);
+        let s;
+        if (abs >= 1e6) s = '$' + (abs/1e6).toFixed(2) + 'M';
+        else if (abs >= 1e3) s = '$' + (abs/1e3).toFixed(1) + 'K';
+        else s = '$' + abs.toFixed(0);
+        return v < 0 ? '(' + s + ')' : s;
+    }
+    if (type==='pct') return (v*100).toFixed(1) + '%';
+    if (type==='pct1') return v.toFixed(1) + '%';
+    return v.toLocaleString();
+}
+
+function sum(arr, key) { return arr.reduce((a,b) => a + (b[key]||0), 0); }
+function avg(arr, key) { return sum(arr,key) / arr.length; }
+
+function shortMonth(m) {
+    const parts = m.split(' ');
+    return parts[0].slice(0,3) + ' ' + parts[1].slice(2);
+}
+
+// ============================================================
+// DASHBOARD CLASS
+// ============================================================
+class Dashboard {
+    constructor() {
+        this.charts = {};
+        this.filtered = RAW;
+        this.init();
+    }
+
+    getFilteredData() {
+        const year = document.getElementById('f-year').value;
+        const view = document.getElementById('f-view').value;
+        let data = year === 'all'  ? RAW
+                 : year === 'ttm'  ? RAW.slice(-12)
+                 : RAW.filter(d => d.month.includes(year));
+
+        if (view === 'quarterly') {
+            const quarters = {};
+            data.forEach(d => {
+                const [mo, yr] = d.month.split(' ');
+                const moIdx = ['January','February','March','April','May','June','July','August','September','October','November','December'].indexOf(mo);
+                const q = Math.floor(moIdx/3) + 1;
+                const key = `Q${q} ${yr}`;
+                if (!quarters[key]) quarters[key] = { month: key, totalIncome:0, totalCOGS:0, grossProfit:0, totalExpenses:0, netOperatingIncome:0, totalOtherIncome:0, totalOtherExpenses:0, netIncome:0, fiservRevenue:0, payrocRevenue:0, advisoryRevenue:0, equipmentRevenue:0, fiservCommissions:0, personnelExpenses:0, travelMeals:0, marketing:0, insurance:0, professionalFees:0, facilities:0, itCosts:0, feesDues:0, officeSupplies:0 };
+                Object.keys(quarters[key]).forEach(k => { if(k!=='month') quarters[key][k] += d[k]||0; });
+            });
+            data = Object.values(quarters);
+        }
+        return data;
+    }
+
+    filter() {
+        this.filtered = this.getFilteredData();
+        this.renderKPIs();
+        this.updateAllCharts();
+        this.renderTable();
+    }
+
+    init() {
+        this.filtered = this.getFilteredData();
+        this.renderKPIs();
+        this.buildCharts();
+        this.renderTable();
+    }
+
+    // ---- KPIs ----
+    renderKPIs() {
+        const d = this.filtered;
+        const totalRev = sum(d,'totalIncome');
+        const totalCOGS = sum(d,'totalCOGS');
+        const totalGP = sum(d,'grossProfit');
+        const totalOpEx = sum(d,'totalExpenses');
+        const totalNI = sum(d,'netIncome');
+        const gpPct = totalRev > 0 ? totalGP/totalRev*100 : 0;
+
+        // Compare to prior period — YTD-aware for incomplete years, TTM-aware
+        const year = document.getElementById('f-year').value;
+        let prevRev = 0, prevCOGS = 0, prevGP = 0, prevGpPct = 0, prevOpEx = 0, prevNI = 0;
+        let hasPrev = false, isYTD = false, isTTM = false, ytdThrough = '';
+
+        if (year === 'ttm') {
+            // TTM: current = last 12 months, prior = 12 months before that
+            isTTM = true;
+            const prev = RAW.slice(-24, -12);
+            if (prev.length === 12) {
+                hasPrev = true;
+                prevRev   = sum(prev,'totalIncome');
+                prevCOGS  = sum(prev,'totalCOGS');
+                prevGP    = sum(prev,'grossProfit');
+                prevGpPct = prevRev > 0 ? prevGP/prevRev*100 : 0;
+                prevOpEx  = sum(prev,'totalExpenses');
+                prevNI    = sum(prev,'netIncome');
+            }
+        } else if (year !== 'all') {
+            const prevYear = String(parseInt(year) - 1);
+            const currYearMonths = RAW.filter(x => x.month.includes(year));
+
+            if (currYearMonths.length > 0 && currYearMonths.length < 12) {
+                // Incomplete year → YTD mode: match only the same months in prior year
+                isYTD = true;
+                const currMonthNames = currYearMonths.map(x => x.month.split(' ')[0]);
+                ytdThrough = currMonthNames[currMonthNames.length - 1];
+                const prev = RAW.filter(x => x.month.includes(prevYear) && currMonthNames.includes(x.month.split(' ')[0]));
+                if (prev.length) {
+                    hasPrev = true;
+                    prevRev   = sum(prev,'totalIncome');
+                    prevCOGS  = sum(prev,'totalCOGS');
+                    prevGP    = sum(prev,'grossProfit');
+                    prevGpPct = prevRev > 0 ? prevGP/prevRev*100 : 0;
+                    prevOpEx  = sum(prev,'totalExpenses');
+                    prevNI    = sum(prev,'netIncome');
+                }
+            } else {
+                // Complete year → full year vs full prior year (unchanged behavior)
+                const prev = RAW.filter(x => x.month.includes(prevYear));
+                if (prev.length) {
+                    hasPrev = true;
+                    prevRev   = sum(prev,'totalIncome');
+                    prevCOGS  = sum(prev,'totalCOGS');
+                    prevGP    = sum(prev,'grossProfit');
+                    prevGpPct = prevRev > 0 ? prevGP/prevRev*100 : 0;
+                    prevOpEx  = sum(prev,'totalExpenses');
+                    prevNI    = sum(prev,'netIncome');
+                }
+            }
+        } else {
+            // "All Years" → compare most recent complete year vs prior (2025 vs 2024)
+            const yr25 = RAW.filter(x => x.month.includes('2025'));
+            const yr24 = RAW.filter(x => x.month.includes('2024'));
+            if (yr25.length && yr24.length) {
+                hasPrev = true;
+                prevRev   = sum(yr24,'totalIncome');
+                prevCOGS  = sum(yr24,'totalCOGS');
+                prevGP    = sum(yr24,'grossProfit');
+                prevGpPct = prevRev > 0 ? prevGP/prevRev*100 : 0;
+                prevOpEx  = sum(yr24,'totalExpenses');
+                prevNI    = sum(yr24,'netIncome');
+            }
+        }
+
+        const prevYearNum = (year !== 'all' && year !== 'ttm') ? String(parseInt(year)-1) : '2024';
+        const yoyLabel = isTTM  ? 'vs prior 12mo'
+                       : isYTD  ? `YTD vs ${prevYearNum}`
+                       : year === 'all' ? 'vs 2024'
+                       : `vs ${prevYearNum}`;
+
+        const kpis = [
+            { label:'Total Revenue',  val:totalRev,  prev:hasPrev?prevRev:0,   type:'currency', color:'blue',   exp:false },
+            { label:'Total COGS',     val:totalCOGS, prev:hasPrev?prevCOGS:0,  type:'currency', color:'orange', exp:true  },
+            { label:'Gross Profit',   val:totalGP,   prev:hasPrev?prevGP:0,    type:'currency', color:'green',  exp:false },
+            { label:'Gross Margin',   val:gpPct,     prev:hasPrev?prevGpPct:0, type:'pct1',     color:'purple', exp:false, isMargin:true },
+            { label:'Total OpEx',     val:totalOpEx, prev:hasPrev?prevOpEx:0,  type:'currency', color:'pink',   exp:true  },
+            { label:'Net Income',     val:totalNI,   prev:hasPrev?prevNI:0,    type:'currency', color:totalNI>=0?'green':'red', exp:false },
+        ];
+
+        const html = kpis.map(k => {
+            let changeHtml = '';
+            if (hasPrev && k.prev !== 0) {
+                let chg;
+                if (k.isMargin) {
+                    // show pp change for margin
+                    chg = k.val - k.prev;
+                    const cls = chg >= 0 ? 'pos' : 'neg';
+                    const sign = chg >= 0 ? '+' : '';
+                    changeHtml = `<div class="kpi-change ${cls}">${sign}${chg.toFixed(1)}pp ${yoyLabel}</div>`;
+                } else {
+                    chg = ((k.val - k.prev) / Math.abs(k.prev)) * 100;
+                    const cls = k.exp ? (chg<=0?'pos':'neg') : (chg>=0?'pos':'neg');
+                    const sign = chg >= 0 ? '+' : '';
+                    changeHtml = `<div class="kpi-change ${cls}">${sign}${chg.toFixed(1)}% ${yoyLabel}</div>`;
+                }
+            }
+            const valStr = k.type==='pct1' ? k.val.toFixed(1)+'%' : fmt(k.val);
+            const ytdTag = isYTD ? `<span style="font-size:9px;font-weight:700;padding:1px 5px;border-radius:4px;background:rgba(163,31,255,.12);color:var(--run-purple);margin-left:5px;vertical-align:middle;letter-spacing:.3px;">YTD</span>`
+                         : isTTM ? `<span style="font-size:9px;font-weight:700;padding:1px 5px;border-radius:4px;background:rgba(75,63,255,.12);color:var(--run-cobalt);margin-left:5px;vertical-align:middle;letter-spacing:.3px;">TTM</span>`
+                         : '';
+            return `<div class="kpi ${k.color}">
+                <div class="kpi-label">${k.label}${ytdTag}</div>
+                <div class="kpi-val" style="color:${k.val<0&&k.type==='currency'?'#F6025E':'inherit'}">${valStr}</div>
+                ${changeHtml}
+            </div>`;
+        }).join('');
+
+        document.getElementById('kpi-row').innerHTML = html;
+    }
+
+    // ---- CHARTS ----
+    buildCharts() {
+        this.buildRevenueChart();
+        this.buildMixChart();
+        this.buildNetIncomeChart();
+        this.buildMarginsChart();
+        this.buildExpensesChart();
+        this.buildOpexPie();
+    }
+
+    getLabels() { return this.filtered.map(d => shortMonth(d.month)); }
+
+    buildRevenueChart() {
+        const ctx = document.getElementById('c-revenue').getContext('2d');
+        this.charts.revenue = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: this.getLabels(),
+                datasets: [
+                    { label:'Revenue', data: this.filtered.map(d=>d.totalIncome), backgroundColor:'#22004B22', borderColor:'#22004B', borderWidth:2, type:'line', fill:false, tension:0.3, pointRadius:2 },
+                    { label:'COGS', data: this.filtered.map(d=>d.totalCOGS), backgroundColor:'#FF6A0044', borderColor:'#FF6A00', borderWidth:1.5, type:'line', fill:false, tension:0.3, pointRadius:2 },
+                    { label:'Gross Profit', data: this.filtered.map(d=>d.grossProfit), backgroundColor: this.filtered.map(d=>d.grossProfit>=0?'#16a34a88':'#F6025E88'), borderRadius:3 },
+                ]
+            },
+            options: this.lineOpts('currency')
+        });
+    }
+
+    buildMixChart() {
+        const d = this.filtered;
+        const fiserv = sum(d,'fiservRevenue');
+        const payroc = sum(d,'payrocRevenue');
+        const advisory = sum(d,'advisoryRevenue');
+        const equipment = sum(d,'equipmentRevenue');
+        const ctx = document.getElementById('c-mix').getContext('2d');
+        this.charts.mix = new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Fiserv Processing','Payroc Processing','Advisory / SaaS','Equipment'],
+                datasets:[{ data:[fiserv,payroc,advisory,equipment], backgroundColor:['#22004Bcc','#A31FFFcc','#4B3FFFcc','#FF6A00cc'], borderColor:'#fff', borderWidth:2 }]
+            },
+            options: {
+                responsive:true, maintainAspectRatio:false, cutout:'58%',
+                plugins:{
+                    legend:{ position:'bottom', labels:{ usePointStyle:true, padding:10, font:{size:11} } },
+                    tooltip:{ callbacks:{ label: ctx => {
+                        const total = ctx.dataset.data.reduce((a,b)=>a+b,0);
+                        return ` ${ctx.label}: ${fmt(ctx.parsed)} (${(ctx.parsed/total*100).toFixed(1)}%)`;
+                    }}}
+                }
+            }
+        });
+    }
+
+    buildNetIncomeChart() {
+        const ctx = document.getElementById('c-netincome').getContext('2d');
+        this.charts.netincome = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: this.getLabels(),
+                datasets:[{
+                    label:'Net Income',
+                    data: this.filtered.map(d=>d.netIncome),
+                    backgroundColor: this.filtered.map(d=>d.netIncome>=0?'#16a34a99':'#F6025E66'),
+                    borderColor: this.filtered.map(d=>d.netIncome>=0?'#16a34a':'#F6025E'),
+                    borderWidth:1, borderRadius:3
+                }]
+            },
+            options: {
+                ...this.lineOpts('currency'),
+                plugins:{
+                    legend:{display:false},
+                    tooltip:{ callbacks:{ label: ctx => ' Net Income: ' + fmt(ctx.parsed.y) }}
+                }
+            }
+        });
+    }
+
+    buildMarginsChart() {
+        const ctx = document.getElementById('c-margins').getContext('2d');
+        const gpPct = this.filtered.map(d => d.totalIncome>0 ? d.grossProfit/d.totalIncome*100 : 0);
+        const cogsPct = this.filtered.map(d => d.totalIncome>0 ? d.totalCOGS/d.totalIncome*100 : 0);
+        this.charts.margins = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: this.getLabels(),
+                datasets:[
+                    { label:'Gross Margin %', data:gpPct, borderColor:'#A31FFF', backgroundColor:'#A31FFF18', fill:true, tension:0.3, pointRadius:2, borderWidth:2 },
+                    { label:'COGS % of Revenue', data:cogsPct, borderColor:'#FF6A00', backgroundColor:'transparent', tension:0.3, pointRadius:2, borderWidth:2, borderDash:[4,3] }
+                ]
+            },
+            options: {
+                responsive:true, maintainAspectRatio:false,
+                interaction:{ mode:'index', intersect:false },
+                plugins:{ legend:{ position:'top', labels:{ usePointStyle:true, padding:16, font:{size:11} }} },
+                scales:{
+                    x:{ grid:{display:false}, ticks:{font:{size:10}} },
+                    y:{ ticks:{ callback: v => v.toFixed(0)+'%', font:{size:10} }, grid:{color:'#E8E0F5'} }
+                }
+            }
+        });
+    }
+
+    buildExpensesChart() {
+        const ctx = document.getElementById('c-expenses').getContext('2d');
+        const categories = ['personnelExpenses','travelMeals','marketing','professionalFees','itCosts','facilities','insurance','feesDues','officeSupplies'];
+        const catLabels = ['Personnel','Travel & Meals','Marketing','Prof. Fees','IT / Tech','Facilities','Insurance','Fees & Dues','Office'];
+        const catColors = ['#22004B','#A31FFF','#4B3FFF','#FF6A00','#F6025E','#CC00CC','#16a34a','#7B6995','#E8E0F5'];
+
+        this.charts.expenses = new Chart(ctx, {
+            type:'bar',
+            data:{
+                labels: this.getLabels(),
+                datasets: categories.map((k,i) => ({
+                    label: catLabels[i],
+                    data: this.filtered.map(d => Math.max(0,d[k]||0)),
+                    backgroundColor: catColors[i] + 'cc',
+                    stack:'exp'
+                }))
+            },
+            options:{
+                responsive:true, maintainAspectRatio:false,
+                interaction:{ mode:'index', intersect:false },
+                plugins:{ legend:{ position:'bottom', labels:{ usePointStyle:true, padding:8, font:{size:10} }} },
+                scales:{
+                    x:{ stacked:true, grid:{display:false}, ticks:{font:{size:10}} },
+                    y:{ stacked:true, ticks:{ callback: v=>fmt(v), font:{size:10} }, grid:{color:'#E8E0F5'} }
+                }
+            }
+        });
+    }
+
+    buildOpexPie() {
+        const d = this.filtered;
+        const cats = ['personnelExpenses','travelMeals','marketing','professionalFees','itCosts','facilities','insurance','feesDues','officeSupplies'];
+        const labels = ['Personnel','Travel & Meals','Marketing','Prof. Fees','IT / Tech','Facilities','Insurance','Fees & Dues','Office'];
+        const vals = cats.map(k => Math.max(0,sum(d,k)));
+        const colors = ['#22004Bcc','#A31FFFcc','#4B3FFFcc','#FF6A00cc','#F6025Ecc','#CC00CCcc','#16a34acc','#7B6995cc','#E8E0F5cc'];
+
+        const ctx = document.getElementById('c-opex-pie').getContext('2d');
+        this.charts.opexpie = new Chart(ctx, {
+            type:'doughnut',
+            data:{ labels, datasets:[{ data:vals, backgroundColor:colors, borderColor:'#fff', borderWidth:2 }] },
+            options:{
+                responsive:true, maintainAspectRatio:false, cutout:'50%',
+                plugins:{
+                    legend:{ position:'bottom', labels:{ usePointStyle:true, padding:8, font:{size:10.5} } },
+                    tooltip:{ callbacks:{ label: ctx => {
+                        const total = ctx.dataset.data.reduce((a,b)=>a+b,0);
+                        return ` ${ctx.label}: ${fmt(ctx.parsed)} (${(ctx.parsed/total*100).toFixed(1)}%)`;
+                    }}}
+                }
+            }
+        });
+    }
+
+    updateAllCharts() {
+        const d = this.filtered;
+        const labels = this.getLabels();
+
+        // Revenue
+        this.charts.revenue.data.labels = labels;
+        this.charts.revenue.data.datasets[0].data = d.map(x=>x.totalIncome);
+        this.charts.revenue.data.datasets[1].data = d.map(x=>x.totalCOGS);
+        this.charts.revenue.data.datasets[2].data = d.map(x=>x.grossProfit);
+        this.charts.revenue.data.datasets[2].backgroundColor = d.map(x=>x.grossProfit>=0?'#16a34a88':'#F6025E88');
+        this.charts.revenue.update('none');
+
+        // Mix
+        const cats = ['fiservRevenue','payrocRevenue','advisoryRevenue','equipmentRevenue'];
+        this.charts.mix.data.datasets[0].data = cats.map(k=>sum(d,k));
+        this.charts.mix.update('none');
+
+        // Net income
+        this.charts.netincome.data.labels = labels;
+        this.charts.netincome.data.datasets[0].data = d.map(x=>x.netIncome);
+        this.charts.netincome.data.datasets[0].backgroundColor = d.map(x=>x.netIncome>=0?'#16a34a99':'#F6025E66');
+        this.charts.netincome.data.datasets[0].borderColor = d.map(x=>x.netIncome>=0?'#16a34a':'#F6025E');
+        this.charts.netincome.update('none');
+
+        // Margins
+        this.charts.margins.data.labels = labels;
+        this.charts.margins.data.datasets[0].data = d.map(x=>x.totalIncome>0?x.grossProfit/x.totalIncome*100:0);
+        this.charts.margins.data.datasets[1].data = d.map(x=>x.totalIncome>0?x.totalCOGS/x.totalIncome*100:0);
+        this.charts.margins.update('none');
+
+        // Expenses
+        const cats2 = ['personnelExpenses','travelMeals','marketing','professionalFees','itCosts','facilities','insurance','feesDues','officeSupplies'];
+        this.charts.expenses.data.labels = labels;
+        cats2.forEach((k,i) => { this.charts.expenses.data.datasets[i].data = d.map(x=>Math.max(0,x[k]||0)); });
+        this.charts.expenses.update('none');
+
+        // OpEx pie
+        this.charts.opexpie.data.datasets[0].data = cats2.map(k=>Math.max(0,sum(d,k)));
+        this.charts.opexpie.update('none');
+    }
+
+    lineOpts(fmt_type) {
+        return {
+            responsive:true, maintainAspectRatio:false,
+            interaction:{ mode:'index', intersect:false },
+            plugins:{
+                legend:{ position:'top', labels:{ usePointStyle:true, padding:16, font:{size:11} } },
+                tooltip:{ callbacks:{ label: ctx => ` ${ctx.dataset.label}: ${fmt(ctx.parsed.y)}` }}
+            },
+            scales:{
+                x:{ grid:{display:false}, ticks:{font:{size:10}} },
+                y:{ ticks:{ callback: v=>fmt(v), font:{size:10} }, grid:{color:'#E8E0F5'} }
+            }
+        };
+    }
+
+    // ---- P&L TABLE ----
+    renderTable() {
+        const d = this.filtered;
+        const year = document.getElementById('f-year').value;
+        const view = document.getElementById('f-view').value;
+
+        const totalRev = sum(d,'totalIncome');
+        const fiservRev = sum(d,'fiservRevenue');
+        const payrocRev = sum(d,'payrocRevenue');
+        const advisoryRev = sum(d,'advisoryRevenue');
+        const equipRev = sum(d,'equipmentRevenue');
+        const totalCOGS = sum(d,'totalCOGS');
+        const fiservComm = sum(d,'fiservCommissions');
+        const equipCost = totalCOGS - fiservComm;
+        const gp = sum(d,'grossProfit');
+        const gpPct = totalRev>0?gp/totalRev*100:0;
+        const personnel = sum(d,'personnelExpenses');
+        const travel = sum(d,'travelMeals');
+        const mktg = sum(d,'marketing');
+        const profFees = sum(d,'professionalFees');
+        const itCosts = sum(d,'itCosts');
+        const facilities = sum(d,'facilities');
+        const insurance = sum(d,'insurance');
+        const fees = sum(d,'feesDues');
+        const office = sum(d,'officeSupplies');
+        const totalOpEx = sum(d,'totalExpenses');
+        const noi = sum(d,'netOperatingIncome');
+        const otherInc = sum(d,'totalOtherIncome');
+        const otherExp = sum(d,'totalOtherExpenses');
+        const ni = sum(d,'netIncome');
+
+        const periodLabel = year==='all' ? 'Jan 2023 – Dec 2025' : `Full Year ${year}`;
+        document.getElementById('tbl-period').textContent = periodLabel;
+
+        function row(label, val, pctOf, indent=false, bold=false, cls='') {
+            const pct = pctOf>0 ? (val/pctOf*100) : null;
+            const pctStr = pct!==null ? fmt(pct,'pct1') : '';
+            const clsStr = [indent?'indent':'', bold?'bold':'', cls].filter(Boolean).join(' ');
+            return `<tr class="${cls}">
+                <td class="${clsStr}">${label}</td>
+                <td class="num ${bold?'bold':''}" style="color:${val<0?'#F6025E':''}">${fmt(val)}</td>
+                <td class="num" style="color:var(--muted)">${pctStr}</td>
+            </tr>`;
+        }
+
+        const html = `<table>
+            <thead><tr><th>Line Item</th><th class="num">Amount</th><th class="num">% of Revenue</th></tr></thead>
+            <tbody>
+                <tr class="section-header"><td colspan="3">Revenue</td></tr>
+                ${row('Fiserv Processing Revenue', fiservRev, totalRev, true)}
+                ${row('Payroc Processing Revenue', payrocRev, totalRev, true)}
+                ${row('Advisory / SaaS Revenue', advisoryRev, totalRev, true)}
+                ${row('Equipment Revenue', equipRev, totalRev, true)}
+                <tr class="total-row">${row('Total Revenue', totalRev, totalRev, false, true)}</tr>
+
+                <tr class="section-header"><td colspan="3">Cost of Goods Sold</td></tr>
+                ${row('Fiserv Commissions', fiservComm, totalRev, true)}
+                ${row('Equipment & Other COGS', equipCost, totalRev, true)}
+                <tr class="total-row">${row('Total COGS', totalCOGS, totalRev, false, true)}</tr>
+
+                <tr class="gp-row">${row('Gross Profit', gp, totalRev, false, true, 'gp-row')}</tr>
+
+                <tr class="section-header"><td colspan="3">Operating Expenses</td></tr>
+                ${row('Personnel (Wages & Benefits)', personnel, totalRev, true)}
+                ${row('Travel, Meals & Entertainment', travel, totalRev, true)}
+                ${row('Marketing & Advertising', mktg, totalRev, true)}
+                ${row('Professional Fees (Legal/Acctg)', profFees, totalRev, true)}
+                ${row('IT & Technology', itCosts, totalRev, true)}
+                ${row('Facilities & Rent', facilities, totalRev, true)}
+                ${row('Insurance', insurance, totalRev, true)}
+                ${row('Fees, Dues & Licenses', fees, totalRev, true)}
+                ${row('Office Supplies', office, totalRev, true)}
+                <tr class="total-row">${row('Total Operating Expenses', totalOpEx, totalRev, false, true)}</tr>
+
+                <tr class="total-row">${row('Net Operating Income', noi, totalRev, false, true, noi>=0?'':'neg-row')}</tr>
+
+                <tr class="section-header"><td colspan="3">Other Income / Expense</td></tr>
+                ${row('Other Income (Interest, Ext.)', otherInc, totalRev, true)}
+                ${row('Other Expenses (D&A, Legal, Amort.)', otherExp, totalRev, true)}
+
+                <tr class="ni-row"><td class="bold">Net Income</td><td class="num bold" style="color:${ni>=0?'#16a34a':'#F6025E'}">${fmt(ni)}</td><td class="num bold" style="color:var(--muted)">${(ni/totalRev*100).toFixed(1)}%</td></tr>
+            </tbody>
+        </table>`;
+
+        document.getElementById('pl-table').innerHTML = html;
+    }
+}
+
+// ── Live data init ─────────────────────────────────────────────────────
+let dash, cmpDash, qtrDash;
+
+async function initDashboard() {
+    const banner  = document.getElementById('loading-banner');
+    const content = document.getElementById('main-content');
+
+    try {
+        const resp = await fetch('/api/data');
+        if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+        RAW = await resp.json();
+
+        if (RAW.length === 0) {
+            banner.innerHTML = '⚠️ No data yet. <a href="/setup" style="color:#A31FFF;font-weight:700;">Connect QuickBooks →</a>';
+            return;
+        }
+
+        banner.style.display = 'none';
+        content.style.display = 'block';
+
+        // Update header subtitle + footer with actual date range
+        if (RAW.length) {
+            const first = RAW[0].month, last = RAW[RAW.length-1].month;
+            document.getElementById('header-sub').textContent = `${first} – ${last} · Accrual Basis`;
+            document.getElementById('footer-date').textContent = `Data through ${last}`;
+        }
+
+        // Also populate the year filter dynamically from data
+        const years = [...new Set(RAW.map(d => d.month.split(' ')[1]))].sort().reverse();
+        const sel = document.getElementById('f-year');
+        sel.innerHTML = '<option value="all">All Years</option>' +
+            years.map(y => `<option value="${y}">${y}</option>`).join('');
+
+        dash    = new Dashboard();
+
+// ============================================================
+// TAB SWITCHING
+// ============================================================
+function switchTab(name, btn) {
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById('tab-' + name).classList.add('active');
+    btn.classList.add('active');
+    // Show/hide overview filters
+    const filters = document.querySelector('.filters');
+    if (filters) filters.style.display = name === 'overview' ? 'flex' : 'none';
+    if (name === 'compare')  cmpDash.render();
+    if (name === 'quarterly') qtrDash.render();
+}
+
+// ============================================================
+// MONTH COMPARISON DASHBOARD
+// ============================================================
+const MONTHS_ORDER = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+
+class ComparisonDashboard {
+    constructor() {
+        this.charts = {};
+        this.ready = false;
+        this.buildMonthSelect();
+    }
+
+    buildMonthSelect() {
+        const sel = document.getElementById('cmp-month');
+        // Populate in reverse (most recent first)
+        [...RAW].reverse().forEach(d => {
+            const opt = document.createElement('option');
+            opt.value = d.month;
+            opt.textContent = d.month;
+            sel.appendChild(opt);
+        });
+    }
+
+    getMonthData(monthStr) {
+        return RAW.find(d => d.month === monthStr) || null;
+    }
+
+    getPriorMonth(monthStr) {
+        const idx = RAW.findIndex(d => d.month === monthStr);
+        return idx > 0 ? RAW[idx - 1] : null;
+    }
+
+    getPriorYearMonth(monthStr) {
+        const [mo, yr] = monthStr.split(' ');
+        const prevYr = String(parseInt(yr) - 1);
+        return RAW.find(d => d.month === `${mo} ${prevYr}`) || null;
+    }
+
+    delta(curr, prev, key) {
+        if (!prev) return { abs: null, pct: null };
+        const c = curr[key] || 0;
+        const p = prev[key] || 0;
+        const abs = c - p;
+        const pct = p !== 0 ? (abs / Math.abs(p)) * 100 : null;
+        return { abs, pct };
+    }
+
+    fmtDelta(d, isExpense=false) {
+        if (d.abs === null) return '<span class="delta-neu">N/A</span>';
+        const pos = isExpense ? d.abs <= 0 : d.abs >= 0;
+        const cls = d.abs === 0 ? 'delta-neu' : (pos ? 'delta-pos' : 'delta-neg');
+        const sign = d.abs >= 0 ? '+' : '';
+        const pctStr = d.pct !== null ? ` (${sign}${d.pct.toFixed(1)}%)` : '';
+        return `<span class="${cls}">${sign}${fmt(d.abs)}${pctStr}</span>`;
+    }
+
+    fmtDeltaShort(d, isExpense=false) {
+        if (d.abs === null) return '<span class="delta-neu">—</span>';
+        const pos = isExpense ? d.abs <= 0 : d.abs >= 0;
+        const cls = d.abs === 0 ? 'delta-neu' : (pos ? 'delta-pos' : 'delta-neg');
+        const sign = d.abs >= 0 ? '+' : '';
+        return `<span class="${cls}">${sign}${fmt(d.abs)}</span>`;
+    }
+
+    fmtPct(d, isExpense=false) {
+        if (d.pct === null) return '<span class="delta-neu">—</span>';
+        const pos = isExpense ? d.pct <= 0 : d.pct >= 0;
+        const cls = d.pct === 0 ? 'delta-neu' : (pos ? 'delta-pos' : 'delta-neg');
+        const sign = d.pct >= 0 ? '+' : '';
+        return `<span class="${cls}">${sign}${d.pct.toFixed(1)}%</span>`;
+    }
+
+    render() {
+        const sel = document.getElementById('cmp-month').value;
+        const curr = this.getMonthData(sel);
+        const mom = this.getPriorMonth(sel);
+        const yoy = this.getPriorYearMonth(sel);
+        if (!curr) return;
+
+        this.renderChips(sel, mom, yoy);
+        this.renderKPIs(curr, mom, yoy);
+        this.renderCharts(curr, mom, yoy);
+        this.renderTable(curr, mom, yoy);
+        document.getElementById('cmp-tbl-title').textContent =
+            `P&L Detail: ${sel}${mom?' vs '+mom.month:''}${yoy?' vs '+yoy.month:''}`;
+        this.ready = true;
+    }
+
+    renderChips(sel, mom, yoy) {
+        const html = `
+            <div class="chip chip-sel"><span class="chip-dot" style="background:#22004B"></span>${sel}</div>
+            ${mom ? `<div class="chip chip-mom"><span class="chip-dot" style="background:#FF6A00"></span>vs ${mom.month} (MoM)</div>` : ''}
+            ${yoy ? `<div class="chip chip-yoy"><span class="chip-dot" style="background:#16a34a"></span>vs Same Month Prior Year (${yoy.month})</div>` : ''}
+        `;
+        document.getElementById('cmp-chips').innerHTML = html;
+    }
+
+    renderKPIs(curr, mom, yoy) {
+        const keys = [
+            { key:'totalIncome', label:'Revenue', exp:false },
+            { key:'grossProfit', label:'Gross Profit', exp:false },
+            { key:'totalExpenses', label:'Operating Expenses', exp:true },
+            { key:'netIncome', label:'Net Income', exp:false },
+        ];
+
+        const html = keys.map(k => {
+            const val = curr[k.key] || 0;
+            const gpPct = k.key === 'grossProfit' ? (curr.totalIncome > 0 ? val/curr.totalIncome*100 : 0) : null;
+            const momD = mom ? this.delta(curr, mom, k.key) : { abs:null, pct:null };
+            const yoyD = yoy ? this.delta(curr, yoy, k.key) : { abs:null, pct:null };
+
+            return `<div class="cmp-kpi">
+                <div class="cmp-kpi-label">${k.label}</div>
+                <div class="cmp-kpi-main" style="color:${val<0?'#F6025E':''}">${fmt(val)}${gpPct!==null?`<span style="font-size:13px;font-weight:500;color:var(--muted);margin-left:6px;">${gpPct.toFixed(1)}%</span>`:''}</div>
+                ${mom ? `<div class="cmp-kpi-row"><span>vs ${mom.month}</span>${this.fmtDelta(momD, k.exp)}</div>` : ''}
+                ${yoy ? `<div class="cmp-kpi-row"><span>vs ${yoy.month}</span>${this.fmtDelta(yoyD, k.exp)}</div>` : ''}
+            </div>`;
+        }).join('');
+        document.getElementById('cmp-kpis').innerHTML = html;
+    }
+
+    renderCharts(curr, mom, yoy) {
+        const periods = [curr.month, mom ? mom.month : null, yoy ? yoy.month : null].filter(Boolean);
+        const pColors = ['#22004B','#FF6A00','#16a34a'];
+
+        // Revenue/COGS/GP bar chart
+        const revData = {
+            labels: ['Revenue', 'COGS', 'Gross Profit'],
+            datasets: [curr, mom, yoy].filter(Boolean).map((d,i) => ({
+                label: d.month,
+                data: [d.totalIncome, d.totalCOGS, d.grossProfit],
+                backgroundColor: pColors[i] + 'cc',
+                borderColor: pColors[i],
+                borderWidth: 1,
+                borderRadius: 4
+            }))
+        };
+
+        // OpEx breakdown
+        const expCats = ['personnelExpenses','travelMeals','marketing','professionalFees','itCosts','facilities'];
+        const expLabels = ['Personnel','Travel & Meals','Marketing','Prof. Fees','IT','Facilities'];
+        const expData = {
+            labels: expLabels,
+            datasets: [curr, mom, yoy].filter(Boolean).map((d,i) => ({
+                label: d.month,
+                data: expCats.map(k => Math.max(0, d[k]||0)),
+                backgroundColor: pColors[i] + 'cc',
+                borderColor: pColors[i],
+                borderWidth: 1,
+                borderRadius: 4
+            }))
+        };
+
+        const barOpts = {
+            responsive:true, maintainAspectRatio:false,
+            interaction:{ mode:'index', intersect:false },
+            plugins:{ legend:{ position:'top', labels:{ usePointStyle:true, padding:12, font:{size:11} }}},
+            scales:{
+                x:{ grid:{display:false}, ticks:{font:{size:11}} },
+                y:{ ticks:{ callback:v=>fmt(v), font:{size:10} }, grid:{color:'#E8E0F5'} }
+            }
+        };
+
+        if (this.charts.revbar) {
+            this.charts.revbar.data = revData;
+            this.charts.revbar.update('none');
+        } else {
+            this.charts.revbar = new Chart(document.getElementById('cmp-c-revbar').getContext('2d'), { type:'bar', data:revData, options:barOpts });
+        }
+
+        if (this.charts.expbar) {
+            this.charts.expbar.data = expData;
+            this.charts.expbar.update('none');
+        } else {
+            this.charts.expbar = new Chart(document.getElementById('cmp-c-expbar').getContext('2d'), { type:'bar', data:expData, options:barOpts });
+        }
+    }
+
+    renderTable(curr, mom, yoy) {
+        const momLabel = mom ? mom.month : '—';
+        const yoyLabel = yoy ? yoy.month : '—';
+
+        const LINES = [
+            { section:'Revenue' },
+            { key:'fiservRevenue',   label:'Fiserv Processing Revenue', indent:true },
+            { key:'payrocRevenue',   label:'Payroc Processing Revenue', indent:true },
+            { key:'advisoryRevenue', label:'Advisory / SaaS Revenue', indent:true },
+            { key:'equipmentRevenue',label:'Equipment Revenue', indent:true },
+            { key:'totalIncome',     label:'Total Revenue', bold:true, totalRow:true },
+            { section:'Cost of Goods Sold' },
+            { key:'fiservCommissions',label:'Fiserv Commissions', indent:true, exp:true },
+            { derivedKey:'equipCOGS', label:'Equipment & Other COGS', indent:true, exp:true },
+            { key:'totalCOGS',        label:'Total COGS', bold:true, totalRow:true, exp:true },
+            { key:'grossProfit',      label:'Gross Profit', bold:true, gpRow:true },
+            { section:'Operating Expenses' },
+            { key:'personnelExpenses', label:'Personnel', indent:true, exp:true },
+            { key:'travelMeals',       label:'Travel, Meals & Entertainment', indent:true, exp:true },
+            { key:'marketing',         label:'Marketing & Advertising', indent:true, exp:true },
+            { key:'professionalFees',  label:'Professional Fees', indent:true, exp:true },
+            { key:'itCosts',           label:'IT & Technology', indent:true, exp:true },
+            { key:'facilities',        label:'Facilities & Rent', indent:true, exp:true },
+            { key:'insurance',         label:'Insurance', indent:true, exp:true },
+            { key:'feesDues',          label:'Fees, Dues & Licenses', indent:true, exp:true },
+            { key:'officeSupplies',    label:'Office Supplies', indent:true, exp:true },
+            { key:'totalExpenses',     label:'Total Operating Expenses', bold:true, totalRow:true, exp:true },
+            { key:'netOperatingIncome',label:'Net Operating Income', bold:true, totalRow:true },
+            { section:'Below the Line' },
+            { key:'totalOtherIncome',  label:'Other Income', indent:true },
+            { key:'totalOtherExpenses',label:'Other Expenses (D&A, Legal, Amort.)', indent:true, exp:true },
+            { key:'netIncome',         label:'Net Income', bold:true, niRow:true },
+        ];
+
+        function getVal(d, line) {
+            if (!d) return null;
+            if (line.derivedKey === 'equipCOGS') return (d.totalCOGS||0) - (d.fiservCommissions||0);
+            if (line.derivedKey === 'grossMarginPct') return d.totalIncome > 0 ? d.grossProfit/d.totalIncome*100 : 0;
+            return d[line.key] !== undefined ? (d[line.key]||0) : null;
+        }
+
+        const hasMom = !!mom;
+        const hasYoy = !!yoy;
+
+        let thead = `<tr>
+            <th style="min-width:220px">Line Item</th>
+            <th class="num th-sel" style="min-width:110px">${curr.month}</th>
+            <th class="num th-sel" style="min-width:80px">% Rev</th>`;
+        if (hasMom) thead += `
+            <th class="num th-mom" style="min-width:110px">${momLabel}</th>
+            <th class="num th-delta" style="min-width:95px">$ MoM</th>
+            <th class="num th-delta" style="min-width:70px">% MoM</th>`;
+        if (hasYoy) thead += `
+            <th class="num th-yoy" style="min-width:110px">${yoyLabel}</th>
+            <th class="num th-delta" style="min-width:95px">$ YoY</th>
+            <th class="num th-delta" style="min-width:70px">% YoY</th>`;
+        thead += `</tr>`;
+
+        let tbody = '';
+        LINES.forEach(line => {
+            if (line.section) {
+                let colspan = 2 + (hasMom ? 3 : 0) + (hasYoy ? 3 : 0);
+                tbody += `<tr class="section-header"><td colspan="${colspan}">${line.section}</td></tr>`;
+                return;
+            }
+            const v = getVal(curr, line);
+            const mv = hasMom ? getVal(mom, line) : null;
+            const yv = hasYoy ? getVal(yoy, line) : null;
+            const pct = curr.totalIncome > 0 && v !== null ? (v / curr.totalIncome * 100).toFixed(1) + '%' : '—';
+            const momD = hasMom && mv !== null ? { abs: v - mv, pct: mv !== 0 ? (v - mv)/Math.abs(mv)*100 : null } : null;
+            const yoyD = hasYoy && yv !== null ? { abs: v - yv, pct: yv !== 0 ? (v - yv)/Math.abs(yv)*100 : null } : null;
+
+            const rowCls = line.totalRow ? 'total-row' : line.gpRow ? 'gp-row' : line.niRow ? 'ni-row' : '';
+            const labelCls = (line.indent ? 'indent ' : '') + (line.bold ? 'bold' : '');
+
+            let tr = `<tr class="${rowCls}">
+                <td class="${labelCls}">${line.label}</td>
+                <td class="num col-sel" style="color:${v<0?'#F6025E':''};${line.bold?'font-weight:700':''}">${v !== null ? fmt(v) : '—'}</td>
+                <td class="num" style="color:var(--muted);font-size:11.5px">${pct}</td>`;
+
+            if (hasMom) {
+                const deltaOk = momD !== null;
+                tr += `<td class="num col-mom" style="color:${mv<0?'#F6025E':''}">${mv !== null ? fmt(mv) : '—'}</td>`;
+                tr += `<td class="num">${deltaOk ? this.fmtDeltaShort(momD, line.exp) : '<span class="delta-neu">—</span>'}</td>`;
+                tr += `<td class="num">${deltaOk ? this.fmtPct(momD, line.exp) : '<span class="delta-neu">—</span>'}</td>`;
+            }
+            if (hasYoy) {
+                tr += `<td class="num col-yoy" style="color:${yv<0?'#F6025E':''}">${yv !== null ? fmt(yv) : '—'}</td>`;
+                const deltaOk = yoyD !== null;
+                tr += `<td class="num">${deltaOk ? this.fmtDeltaShort(yoyD, line.exp) : '<span class="delta-neu">—</span>'}</td>`;
+                tr += `<td class="num">${deltaOk ? this.fmtPct(yoyD, line.exp) : '<span class="delta-neu">—</span>'}</td>`;
+            }
+            tr += `</tr>`;
+            tbody += tr;
+        });
+
+        document.getElementById('cmp-pl-table').innerHTML =
+            `<table class="cmp-tbl"><thead>${thead}</thead><tbody>${tbody}</tbody></table>`;
+    }
+}
+
+        cmpDash = new ComparisonDashboard();
+
+// ============================================================
+// QUARTERLY DATA + COMPARISON DASHBOARD
+// ============================================================
+const MO_NAMES = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+
+// Build aggregated quarterly dataset from RAW
+function buildQuarterlyData() {
+    const map = {};
+    const order = [];
+    RAW.forEach(d => {
+        const [mo, yr] = d.month.split(' ');
+        const q = Math.floor(MO_NAMES.indexOf(mo) / 3) + 1;
+        const key = `Q${q} ${yr}`;
+        if (!map[key]) {
+            map[key] = { month: key, quarter: q, year: parseInt(yr),
+                totalIncome:0, totalCOGS:0, grossProfit:0, totalExpenses:0,
+                netOperatingIncome:0, totalOtherIncome:0, totalOtherExpenses:0, netIncome:0,
+                fiservRevenue:0, payrocRevenue:0, advisoryRevenue:0, equipmentRevenue:0,
+                fiservCommissions:0, personnelExpenses:0, travelMeals:0, marketing:0,
+                insurance:0, professionalFees:0, facilities:0, itCosts:0, feesDues:0, officeSupplies:0 };
+            order.push(key);
+        }
+        const qd = map[key];
+        Object.keys(qd).forEach(k => { if (!['month','quarter','year'].includes(k)) qd[k] += d[k] || 0; });
+    });
+    return order.map(k => map[k]);
+}
+
+        const QUARTERLY = buildQuarterlyData();
+
+class QuarterlyDashboard {
+    constructor() {
+        this.charts = {};
+        this.buildSelect();
+    }
+
+    buildSelect() {
+        const sel = document.getElementById('qtr-period');
+        [...QUARTERLY].reverse().forEach(d => {
+            const opt = document.createElement('option');
+            opt.value = d.month;
+            opt.textContent = d.month;
+            sel.appendChild(opt);
+        });
+    }
+
+    getData(key)       { return QUARTERLY.find(d => d.month === key) || null; }
+    getPriorQtr(key)   { const i = QUARTERLY.findIndex(d => d.month === key); return i > 0 ? QUARTERLY[i-1] : null; }
+    getPriorYearQtr(key) {
+        const d = this.getData(key);
+        if (!d) return null;
+        return QUARTERLY.find(x => x.quarter === d.quarter && x.year === d.year - 1) || null;
+    }
+
+    delta(curr, prev, k) {
+        if (!prev) return { abs:null, pct:null };
+        const c = curr[k] || 0, p = prev[k] || 0;
+        const abs = c - p;
+        return { abs, pct: p !== 0 ? abs / Math.abs(p) * 100 : null };
+    }
+
+    fmtDelta(d, exp=false) {
+        if (d.abs === null) return '<span class="delta-neu">N/A</span>';
+        const pos = exp ? d.abs <= 0 : d.abs >= 0;
+        const cls = d.abs === 0 ? 'delta-neu' : (pos ? 'delta-pos' : 'delta-neg');
+        const sign = d.abs >= 0 ? '+' : '';
+        const pctStr = d.pct !== null ? ` (${sign}${d.pct.toFixed(1)}%)` : '';
+        return `<span class="${cls}">${sign}${fmt(d.abs)}${pctStr}</span>`;
+    }
+    fmtDeltaShort(d, exp=false) {
+        if (d.abs === null) return '<span class="delta-neu">—</span>';
+        const pos = exp ? d.abs <= 0 : d.abs >= 0;
+        const cls = d.abs === 0 ? 'delta-neu' : (pos ? 'delta-pos' : 'delta-neg');
+        const sign = d.abs >= 0 ? '+' : '';
+        return `<span class="${cls}">${sign}${fmt(d.abs)}</span>`;
+    }
+    fmtPct(d, exp=false) {
+        if (d.pct === null) return '<span class="delta-neu">—</span>';
+        const pos = exp ? d.pct <= 0 : d.pct >= 0;
+        const cls = d.pct === 0 ? 'delta-neu' : (pos ? 'delta-pos' : 'delta-neg');
+        const sign = d.pct >= 0 ? '+' : '';
+        return `<span class="${cls}">${sign}${d.pct.toFixed(1)}%</span>`;
+    }
+
+    render() {
+        const key  = document.getElementById('qtr-period').value;
+        const curr = this.getData(key);
+        const qoq  = this.getPriorQtr(key);
+        const yoy  = this.getPriorYearQtr(key);
+        if (!curr) return;
+        this.renderChips(curr, qoq, yoy);
+        this.renderKPIs(curr, qoq, yoy);
+        this.renderCharts(curr, qoq, yoy);
+        this.renderTable(curr, qoq, yoy);
+        document.getElementById('qtr-tbl-title').textContent =
+            `P&L Detail: ${key}${qoq?' vs '+qoq.month:''}${yoy?' vs '+yoy.month:''}`;
+    }
+
+    renderChips(curr, qoq, yoy) {
+        document.getElementById('qtr-chips').innerHTML = `
+            <div class="chip chip-sel"><span class="chip-dot" style="background:#22004B"></span>${curr.month}</div>
+            ${qoq ? `<div class="chip chip-mom"><span class="chip-dot" style="background:#FF6A00"></span>vs ${qoq.month} (QoQ)</div>` : ''}
+            ${yoy ? `<div class="chip chip-yoy"><span class="chip-dot" style="background:#16a34a"></span>vs Same Quarter Prior Year (${yoy.month})</div>` : ''}
+        `;
+    }
+
+    renderKPIs(curr, qoq, yoy) {
+        const keys = [
+            { key:'totalIncome',   label:'Revenue',            exp:false },
+            { key:'grossProfit',   label:'Gross Profit',       exp:false },
+            { key:'totalExpenses', label:'Operating Expenses', exp:true  },
+            { key:'netIncome',     label:'Net Income',         exp:false },
+        ];
+        const html = keys.map(k => {
+            const val  = curr[k.key] || 0;
+            const gpPct = k.key==='grossProfit' ? (curr.totalIncome>0 ? val/curr.totalIncome*100 : 0) : null;
+            const qoqD = qoq ? this.delta(curr, qoq, k.key) : {abs:null,pct:null};
+            const yoyD = yoy ? this.delta(curr, yoy, k.key) : {abs:null,pct:null};
+            return `<div class="cmp-kpi">
+                <div class="cmp-kpi-label">${k.label}</div>
+                <div class="cmp-kpi-main" style="color:${val<0?'#F6025E':''}">${fmt(val)}${gpPct!==null?`<span style="font-size:13px;font-weight:500;color:var(--muted);margin-left:6px;">${gpPct.toFixed(1)}%</span>`:''}</div>
+                ${qoq ? `<div class="cmp-kpi-row"><span>vs ${qoq.month}</span>${this.fmtDelta(qoqD, k.exp)}</div>` : ''}
+                ${yoy ? `<div class="cmp-kpi-row"><span>vs ${yoy.month}</span>${this.fmtDelta(yoyD, k.exp)}</div>` : ''}
+            </div>`;
+        }).join('');
+        document.getElementById('qtr-kpis').innerHTML = html;
+    }
+
+    renderCharts(curr, qoq, yoy) {
+        const pColors = ['#22004B','#FF6A00','#16a34a'];
+        const periods = [curr, qoq, yoy].filter(Boolean);
+
+        const revData = {
+            labels: ['Revenue','COGS','Gross Profit'],
+            datasets: periods.map((d,i) => ({
+                label: d.month,
+                data: [d.totalIncome, d.totalCOGS, d.grossProfit],
+                backgroundColor: pColors[i]+'cc', borderColor: pColors[i], borderWidth:1, borderRadius:4
+            }))
+        };
+
+        const expCats   = ['personnelExpenses','travelMeals','marketing','professionalFees','itCosts','facilities'];
+        const expLabels = ['Personnel','Travel & Meals','Marketing','Prof. Fees','IT','Facilities'];
+        const expData = {
+            labels: expLabels,
+            datasets: periods.map((d,i) => ({
+                label: d.month,
+                data: expCats.map(k => Math.max(0, d[k]||0)),
+                backgroundColor: pColors[i]+'cc', borderColor: pColors[i], borderWidth:1, borderRadius:4
+            }))
+        };
+
+        const opts = {
+            responsive:true, maintainAspectRatio:false,
+            interaction:{ mode:'index', intersect:false },
+            plugins:{ legend:{ position:'top', labels:{ usePointStyle:true, padding:12, font:{size:11} }}},
+            scales:{ x:{ grid:{display:false}, ticks:{font:{size:11}} }, y:{ ticks:{ callback:v=>fmt(v), font:{size:10} }, grid:{color:'#E8E0F5'} }}
+        };
+
+        if (this.charts.rev) { this.charts.rev.data = revData; this.charts.rev.update('none'); }
+        else { this.charts.rev = new Chart(document.getElementById('qtr-c-revbar').getContext('2d'), {type:'bar',data:revData,options:opts}); }
+
+        if (this.charts.exp) { this.charts.exp.data = expData; this.charts.exp.update('none'); }
+        else { this.charts.exp = new Chart(document.getElementById('qtr-c-expbar').getContext('2d'), {type:'bar',data:expData,options:opts}); }
+    }
+
+    renderTable(curr, qoq, yoy) {
+        const LINES = [
+            { section:'Revenue' },
+            { key:'fiservRevenue',    label:'Fiserv Processing Revenue', indent:true },
+            { key:'payrocRevenue',    label:'Payroc Processing Revenue', indent:true },
+            { key:'advisoryRevenue',  label:'Advisory / SaaS Revenue', indent:true },
+            { key:'equipmentRevenue', label:'Equipment Revenue', indent:true },
+            { key:'totalIncome',      label:'Total Revenue', bold:true, totalRow:true },
+            { section:'Cost of Goods Sold' },
+            { key:'fiservCommissions', label:'Fiserv Commissions', indent:true, exp:true },
+            { derived:'equipCOGS',    label:'Equipment & Other COGS', indent:true, exp:true },
+            { key:'totalCOGS',         label:'Total COGS', bold:true, totalRow:true, exp:true },
+            { key:'grossProfit',       label:'Gross Profit', bold:true, gpRow:true },
+            { section:'Operating Expenses' },
+            { key:'personnelExpenses', label:'Personnel', indent:true, exp:true },
+            { key:'travelMeals',       label:'Travel, Meals & Entertainment', indent:true, exp:true },
+            { key:'marketing',         label:'Marketing & Advertising', indent:true, exp:true },
+            { key:'professionalFees',  label:'Professional Fees', indent:true, exp:true },
+            { key:'itCosts',           label:'IT & Technology', indent:true, exp:true },
+            { key:'facilities',        label:'Facilities & Rent', indent:true, exp:true },
+            { key:'insurance',         label:'Insurance', indent:true, exp:true },
+            { key:'feesDues',          label:'Fees, Dues & Licenses', indent:true, exp:true },
+            { key:'officeSupplies',    label:'Office Supplies', indent:true, exp:true },
+            { key:'totalExpenses',      label:'Total Operating Expenses', bold:true, totalRow:true, exp:true },
+            { key:'netOperatingIncome', label:'Net Operating Income', bold:true, totalRow:true },
+            { section:'Below the Line' },
+            { key:'totalOtherIncome',   label:'Other Income', indent:true },
+            { key:'totalOtherExpenses', label:'Other Expenses (D&A, Legal, Amort.)', indent:true, exp:true },
+            { key:'netIncome',          label:'Net Income', bold:true, niRow:true },
+        ];
+
+        const gv = (d, line) => {
+            if (!d) return null;
+            if (line.derived === 'equipCOGS') return (d.totalCOGS||0) - (d.fiservCommissions||0);
+            return d[line.key] !== undefined ? (d[line.key]||0) : null;
+        };
+
+        const hasQoQ = !!qoq, hasYoY = !!yoy;
+        const qoqLabel = qoq ? qoq.month : '—';
+        const yoyLabel = yoy ? yoy.month : '—';
+
+        let thead = `<tr>
+            <th style="min-width:220px">Line Item</th>
+            <th class="num th-sel" style="min-width:110px">${curr.month}</th>
+            <th class="num th-sel" style="min-width:80px">% Rev</th>`;
+        if (hasQoQ) thead += `<th class="num th-mom" style="min-width:110px">${qoqLabel}</th><th class="num th-delta" style="min-width:95px">$ QoQ</th><th class="num th-delta" style="min-width:70px">% QoQ</th>`;
+        if (hasYoY) thead += `<th class="num th-yoy" style="min-width:110px">${yoyLabel}</th><th class="num th-delta" style="min-width:95px">$ YoY</th><th class="num th-delta" style="min-width:70px">% YoY</th>`;
+        thead += '</tr>';
+
+        let tbody = '';
+        LINES.forEach(line => {
+            if (line.section) {
+                const span = 2 + (hasQoQ?3:0) + (hasYoY?3:0);
+                tbody += `<tr class="section-header"><td colspan="${span}">${line.section}</td></tr>`;
+                return;
+            }
+            const v  = gv(curr, line);
+            const qv = hasQoQ ? gv(qoq, line)  : null;
+            const yv = hasYoY ? gv(yoy, line)   : null;
+            const pct = curr.totalIncome>0 && v!==null ? (v/curr.totalIncome*100).toFixed(1)+'%' : '—';
+            const qD = hasQoQ && qv!==null ? { abs:v-qv, pct:qv!==0?(v-qv)/Math.abs(qv)*100:null } : null;
+            const yD = hasYoY && yv!==null ? { abs:v-yv, pct:yv!==0?(v-yv)/Math.abs(yv)*100:null } : null;
+
+            const rowCls = line.totalRow?'total-row':line.gpRow?'gp-row':line.niRow?'ni-row':'';
+            const labelCls = (line.indent?'indent ':'') + (line.bold?'bold':'');
+
+            let tr = `<tr class="${rowCls}">
+                <td class="${labelCls}">${line.label}</td>
+                <td class="num col-sel" style="color:${v<0?'#F6025E':''};${line.bold?'font-weight:700':''}">${v!==null?fmt(v):'—'}</td>
+                <td class="num" style="color:var(--muted);font-size:11.5px">${pct}</td>`;
+            if (hasQoQ) {
+                tr += `<td class="num col-mom" style="color:${qv<0?'#F6025E':''}">${qv!==null?fmt(qv):'—'}</td>`;
+                tr += `<td class="num">${qD?this.fmtDeltaShort(qD,line.exp):'<span class="delta-neu">—</span>'}</td>`;
+                tr += `<td class="num">${qD?this.fmtPct(qD,line.exp):'<span class="delta-neu">—</span>'}</td>`;
+            }
+            if (hasYoY) {
+                tr += `<td class="num col-yoy" style="color:${yv<0?'#F6025E':''}">${yv!==null?fmt(yv):'—'}</td>`;
+                tr += `<td class="num">${yD?this.fmtDeltaShort(yD,line.exp):'<span class="delta-neu">—</span>'}</td>`;
+                tr += `<td class="num">${yD?this.fmtPct(yD,line.exp):'<span class="delta-neu">—</span>'}</td>`;
+            }
+            tr += '</tr>';
+            tbody += tr;
+        });
+
+        document.getElementById('qtr-pl-table').innerHTML =
+            `<table class="cmp-tbl"><thead>${thead}</thead><tbody>${tbody}</tbody></table>`;
+    }
+}
+
+        qtrDash = new QuarterlyDashboard();
+
+    } catch (err) {
+        const banner = document.getElementById('loading-banner');
+        banner.innerHTML = `❌ Could not load data: ${err.message}. <a href="/setup" style="color:#A31FFF;font-weight:700;">Check setup →</a>`;
+        console.error(err);
+    }
+}
+
+initDashboard();
+</script>
+</body>
+</html>
