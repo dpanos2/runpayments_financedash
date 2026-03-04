@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>run payments · Dashboard Setup</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: #F4EFFF;
+            color: #22004B;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+        }
+        .card {
+            background: #fff;
+            border-radius: 16px;
+            padding: 40px 48px;
+            max-width: 520px;
+            width: 100%;
+            box-shadow: 0 4px 24px rgba(34,0,75,.10);
+        }
+        .logo { font-size: 22px; font-weight: 800; margin-bottom: 8px; }
+        .logo span { font-weight: 400; color: #7B6995; font-size: 16px; }
+        h1 { font-size: 26px; font-weight: 800; margin-bottom: 6px; margin-top: 24px; }
+        .sub { font-size: 14px; color: #7B6995; margin-bottom: 32px; }
+
+        .status-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: #F4EFFF;
+            border-radius: 10px;
+            padding: 14px 18px;
+            margin-bottom: 12px;
+            font-size: 13.5px;
+            font-weight: 600;
+        }
+        .dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+        .dot-green  { background: #16a34a; }
+        .dot-yellow { background: #FF6A00; }
+        .dot-red    { background: #F6025E; }
+        .status-row .label { color: #7B6995; font-weight: 500; font-size: 11px; text-transform: uppercase; letter-spacing: .5px; margin-top: 1px; }
+
+        .btn {
+            display: inline-block;
+            width: 100%;
+            text-align: center;
+            padding: 14px 24px;
+            border-radius: 10px;
+            font-size: 15px;
+            font-weight: 700;
+            text-decoration: none;
+            cursor: pointer;
+            border: none;
+            font-family: inherit;
+            margin-top: 16px;
+            transition: opacity .15s;
+        }
+        .btn:hover { opacity: .88; }
+        .btn-primary { background: #22004B; color: #fff; }
+        .btn-purple  { background: #A31FFF; color: #fff; }
+        .btn-outline { background: transparent; color: #22004B; border: 2px solid #E8E0F5; margin-top: 10px; }
+
+        .divider { border: none; border-top: 1px solid #E8E0F5; margin: 24px 0; }
+        .note { font-size: 12px; color: #7B6995; line-height: 1.6; }
+        .note a { color: #A31FFF; }
+    </style>
+</head>
+<body>
+<div class="card">
+    <div class="logo">run <span>payments · dashboard</span></div>
+
+    <h1>{% if connected %}Dashboard Connected{% else %}Connect QuickBooks{% endif %}</h1>
+    <p class="sub">{% if connected %}Your live P&L dashboard is active and auto-updating.{% else %}Link your QuickBooks Online account to power the dashboard.{% endif %}</p>
+
+    <!-- Status rows -->
+    <div class="status-row">
+        <div class="dot {{ 'dot-green' if connected else 'dot-red' }}"></div>
+        <div>
+            <div>QuickBooks Online — {{ 'Connected' if connected else 'Not connected' }}</div>
+            {% if realm_id %}<div class="label">Company ID: {{ realm_id }}</div>{% endif %}
+        </div>
+    </div>
+
+    <div class="status-row">
+        <div class="dot {{ 'dot-green' if month_count > 0 else 'dot-yellow' }}"></div>
+        <div>
+            <div>{{ month_count }} months of data loaded</div>
+            {% if last_refreshed %}
+                <div class="label">Last refreshed: {{ last_refreshed[:19].replace('T',' ') }} UTC</div>
+            {% else %}
+                <div class="label">Never refreshed</div>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="status-row">
+        <div class="dot dot-green"></div>
+        <div>
+            <div>Auto-refresh: 1st of every month at 6 AM</div>
+            <div class="label">Runs automatically — no action needed</div>
+        </div>
+    </div>
+
+    <hr class="divider">
+
+    {% if connected %}
+        <a href="/" class="btn btn-primary">View Dashboard</a>
+        <a href="/auth/quickbooks" class="btn btn-outline">Reconnect QuickBooks</a>
+    {% else %}
+        <a href="/auth/quickbooks" class="btn btn-purple">Connect QuickBooks Online →</a>
+    {% endif %}
+
+    <p class="note" style="margin-top:20px;">
+        The dashboard auto-refreshes on the 1st of each month. To force a manual refresh, visit
+        <code>/refresh?secret=YOUR_REFRESH_SECRET</code>. See <a href="#">SETUP.md</a> for deployment instructions.
+    </p>
+</div>
+</body>
+</html>
