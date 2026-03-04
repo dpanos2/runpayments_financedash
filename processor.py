@@ -394,5 +394,3 @@ def _parse_date(month_str: str) -> datetime:
         except ValueError:
             pass
     return datetime.min
-
-

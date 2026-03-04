@@ -82,16 +82,13 @@ class QBOClient:
 
     # ── Reports API ────────────────────────────────────────────────────────
 
-    def get_pl_report(self, tokens: dict, start_date: str = HISTORY_START, end_date: str = None) -> dict:
+    def get_pl_report(self, tokens: dict, start_date: str = HISTORY_START) -> dict:
         """
         Fetch the Profit & Loss report from QBO summarized by month.
-        end_date defaults to today, but can be overridden to limit data
-        to a specific cutoff (e.g. last day of most recent closed month).
         Returns the raw JSON response from the Reports API.
         """
         from datetime import date
-        if not end_date:
-            end_date = date.today().strftime('%Y-%m-%d')
+        end_date  = date.today().strftime('%Y-%m-%d')
         realm_id  = tokens['realm_id']
         url       = f'{self.api_base}/{realm_id}/reports/ProfitAndLoss'
 

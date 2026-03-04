@@ -1,11 +1,10 @@
 import os
 import json
-import re
-import secrets
 from datetime import datetime
 from flask import Flask, redirect, request, jsonify, render_template, session
 from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.triggers.cron import CronTrigger
+import secrets
 
 from qbo_client import QBOClient
 from processor import process_pl_report
@@ -17,10 +16,11 @@ app.secret_key = os.environ.get('SECRET_KEY', secrets.token_hex(32))
 # ── Clients ───────────────────────────────────────────────────────────────────
 store = DataStore()
 
+# Use .get() so missing env vars give empty strings instead of crashing on startup
 qbo = QBOClient(
-    client_id=os.environ['QBO_CLIENT_ID'],
-    client_secret=os.environ['QBO_CLIENT_SECRET'],
-    redirect_uri=os.environ['QBO_REDIRECT_URI'],
+    client_id=os.environ.get('QBO_CLIENT_ID', ''),
+    client_secret=os.environ.get('QBO_CLIENT_SECRET', ''),
+    redirect_uri=os.environ.get('QBO_REDIRECT_URI', ''),
     environment=os.environ.get('QBO_ENVIRONMENT', 'production'),
 )
 
@@ -45,14 +45,18 @@ def _clean_data(data):
 @app.route('/')
 def index():
     """Serve the dashboard with live data injected directly into the HTML."""
-    data = _clean_data(store.get_data())
-    template_path = os.path.join(app.root_path, 'templates', 'dashboard.html')
-    with open(template_path, 'r', encoding='utf-8') as f:
-        html = f.read()
-    # Inject live data — simple string replacement, no Jinja2 processing
-    data_json = json.dumps(data)
-    html = html.replace('const RAW = [];', f'const RAW = {data_json};', 1)
-    return html, 200, {'Content-Type': 'text/html; charset=utf-8'}
+    try:
+        data = _clean_data(store.get_data())
+        template_path = os.path.join(app.root_path, 'templates', 'dashboard.html')
+        with open(template_path, 'r', encoding='utf-8') as f:
+            html = f.read()
+        data_json = json.dumps(data)
+        html = html.replace('const RAW = [];', f'const RAW = {data_json};', 1)
+        return html, 200, {'Content-Type': 'text/html; charset=utf-8'}
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        return f'<pre>Dashboard error: {e}</pre>', 500
 
 
 @app.route('/setup')
@@ -136,9 +140,6 @@ def _refresh_data():
     try:
         tokens = qbo.ensure_valid_token(tokens)
         store.save_tokens(tokens)
-        # Use DATA_END_DATE env var to limit data to closed months only.
-        # Set to last day of most recent finalized month e.g. "2026-01-31".
-        # Leave unset to pull all data through today.
         end_date = os.environ.get('DATA_END_DATE') or None
         if end_date:
             print(f'[refresh] Using DATA_END_DATE cutoff: {end_date}')
@@ -156,14 +157,19 @@ def _refresh_data():
         traceback.print_exc()
 
 
-# ── Scheduler ─────────────────────────────────────────────────────────────────
+# ── Scheduler (runs 5th–15th of each month at 6am UTC) ───────────────────────
 
-scheduler = BackgroundScheduler(daemon=True)
-scheduler.add_job(_refresh_data, CronTrigger(day='5-15', hour=6, minute=0))
-scheduler.start()
+try:
+    scheduler = BackgroundScheduler(daemon=True)
+    scheduler.add_job(_refresh_data, CronTrigger(day='5-15', hour=6, minute=0))
+    scheduler.start()
+    print('[scheduler] Started — will run days 5-15 at 06:00 UTC')
+except Exception as e:
+    print(f'[scheduler] WARNING: Could not start scheduler: {e}')
 
 
 # ── Entrypoint ────────────────────────────────────────────────────────────────
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 5000)), debug=False)
+    port = int(os.environ.get('PORT', 5000))
+    app.run(host='0.0.0.0', port=port, debug=False)
