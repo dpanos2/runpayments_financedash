@@ -28,7 +28,7 @@
             --muted:  #7B6995;        /* Muted plum-gray */
             --border: #E8E0F5;        /* Light purple border */
             --radius: 12px;
-            --gap:    16px;
+            --gap:    18px;
 
             /* Chart palette */
             --c1: #22004B;   /* Dark Plum */
@@ -46,7 +46,15 @@
         body { font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background:var(--bg); color:var(--text); font-size:14px; }
 
         /* LAYOUT */
-        .wrap { max-width:1440px; margin:0 auto; padding:var(--gap); }
+        .wrap { max-width:1380px; margin:0 auto; padding:var(--gap); }
+        .sticky-nav {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: var(--bg);
+            margin: calc(-1 * var(--gap)) calc(-1 * var(--gap)) 0;
+            padding: var(--gap) var(--gap) 0;
+        }
 
         /* HEADER — Dark Plum with subtle track-line pattern overlay */
         .header {
@@ -65,56 +73,84 @@
             gap:12px;
             border-bottom:3px solid var(--run-purple);
         }
+        .header-right { display:flex; align-items:center; gap:16px; flex-wrap:wrap; }
+        .tab-nav {
+            display:flex;
+            gap:2px;
+            margin-bottom:var(--gap);
+            border-bottom:2px solid var(--border);
+            padding-bottom:0;
+        }
+        .tab-btn {
+            padding:10px 22px;
+            font-size:13px;
+            font-weight:700;
+            border:none;
+            background:none;
+            cursor:pointer;
+            color:var(--muted);
+            border-bottom:2px solid transparent;
+            margin-bottom:-2px;
+            border-radius:8px 8px 0 0;
+            transition:all .15s;
+            letter-spacing:.2px;
+            font-family:inherit;
+        }
+        .tab-btn:hover { color:var(--run-plum); background:rgba(34,0,75,.05); }
+        .tab-btn.active {
+            color:var(--run-purple);
+            border-bottom-color:var(--run-purple);
+            background:rgba(163,31,255,.06);
+        }
         .header-brand { display:flex; flex-direction:column; gap:2px; }
         .header h1 {
-            font-size:22px;
+            font-size:38px;
             font-weight:800;
-            letter-spacing:-.5px;
+            letter-spacing:-1px;
             display:flex;
             align-items:baseline;
             gap:6px;
         }
         .header h1 .brand-run { font-weight:800; color:#fff; }
-        .header h1 .brand-label { font-weight:400; color:rgba(255,255,255,0.7); font-size:16px; }
+        .header h1 .brand-label { font-weight:400; color:rgba(255,255,255,0.7); font-size:26px; }
+        .brand-sub { font-weight:500; color:rgba(255,255,255,0.45); font-size:13px; letter-spacing:1.5px; text-transform:uppercase; margin-top:4px; }
         .header .sub { font-size:12px; color:rgba(255,255,255,.45); margin-top:2px; letter-spacing:.2px; }
 
-        .filters { display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
         .filter-grp { display:flex; flex-direction:column; gap:3px; }
-        .filter-grp label { font-size:10px; color:rgba(255,255,255,.55); text-transform:uppercase; letter-spacing:.5px; font-weight:600; }
+        .filter-grp label { font-size:10.5px; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:.5px; }
         .filter-grp select {
-            padding:7px 12px;
-            border:1px solid rgba(163,31,255,0.4);
+            padding:8px 14px;
+            border:1.5px solid var(--border);
             border-radius:8px;
-            background:rgba(255,255,255,.08);
-            color:#fff;
-            font-size:13px;
+            font-size:14px;
+            font-weight:600;
+            color:var(--run-plum);
             cursor:pointer;
-            font-family: inherit;
-            font-weight:500;
-            backdrop-filter: blur(4px);
+            background:#fff;
+            font-family:inherit;
         }
-        .filter-grp select option { background:#22004B; }
+        .filter-grp select:focus { outline:none; border-color:var(--run-purple); }
 
         /* KPI ROW */
-        .kpi-row { display:grid; grid-template-columns:repeat(6,1fr); gap:var(--gap); margin-bottom:var(--gap); }
+        .kpi-row { display:grid; grid-template-columns:repeat(3,1fr); gap:var(--gap); margin-bottom:var(--gap); }
         .kpi {
             background:var(--card);
             border-radius:var(--radius);
-            padding:18px 20px;
+            padding:22px 24px 18px;
             box-shadow:0 2px 8px rgba(34,0,75,.07), 0 1px 2px rgba(34,0,75,.04);
-            border-left:4px solid transparent;
+            border-top:4px solid transparent;
             transition: transform .15s, box-shadow .15s;
         }
-        .kpi:hover { transform:translateY(-2px); box-shadow:0 6px 20px rgba(34,0,75,.10); }
-        .kpi.blue   { border-color:var(--c1); }
-        .kpi.green  { border-color:var(--pos-color); }
-        .kpi.red    { border-color:var(--c5); }
-        .kpi.orange { border-color:var(--c4); }
-        .kpi.purple { border-color:var(--c2); }
-        .kpi.pink   { border-color:var(--c6); }
-        .kpi-label { font-size:10.5px; text-transform:uppercase; letter-spacing:.6px; color:var(--muted); margin-bottom:7px; font-weight:600; }
-        .kpi-val { font-size:24px; font-weight:800; line-height:1; margin-bottom:6px; color:var(--run-plum); }
-        .kpi-change { font-size:11.5px; font-weight:600; }
+        .kpi:hover { transform:translateY(-2px); box-shadow:0 8px 24px rgba(34,0,75,.11); }
+        .kpi.blue   { border-color:var(--c1);        background:linear-gradient(160deg,#fff 60%,rgba(34,0,75,.035) 100%); }
+        .kpi.green  { border-color:var(--pos-color); background:linear-gradient(160deg,#fff 60%,rgba(22,163,74,.04) 100%); }
+        .kpi.red    { border-color:var(--c5);        background:linear-gradient(160deg,#fff 60%,rgba(246,2,94,.04) 100%); }
+        .kpi.orange { border-color:var(--c4);        background:linear-gradient(160deg,#fff 60%,rgba(255,106,0,.04) 100%); }
+        .kpi.purple { border-color:var(--c2);        background:linear-gradient(160deg,#fff 60%,rgba(163,31,255,.04) 100%); }
+        .kpi.pink   { border-color:var(--c6);        background:linear-gradient(160deg,#fff 60%,rgba(204,0,204,.04) 100%); }
+        .kpi-label { font-size:10.5px; text-transform:uppercase; letter-spacing:.6px; color:var(--muted); margin-bottom:10px; font-weight:700; }
+        .kpi-val { font-size:28px; font-weight:800; line-height:1; margin-bottom:4px; color:var(--run-plum); }
+        .kpi-divider { border:none; border-top:1px solid var(--border); margin:10px 0 4px; }
         .pos { color:var(--pos-color); }
         .neg { color:var(--neg-color); }
         .neu { color:var(--muted); }
@@ -127,7 +163,7 @@
         .chart-box {
             background:var(--card);
             border-radius:var(--radius);
-            padding:22px 26px;
+            padding:18px 22px;
             box-shadow:0 2px 8px rgba(34,0,75,.06), 0 1px 2px rgba(34,0,75,.03);
         }
         .chart-box h3 {
@@ -151,7 +187,7 @@
             text-transform:none;
             letter-spacing:0;
         }
-        .chart-box canvas { max-height:280px; }
+        .chart-box canvas { max-height:220px; }
 
         /* TABLE */
         .tbl-box {
@@ -237,38 +273,13 @@
         footer strong { color:var(--run-purple); }
 
         /* TABS */
-        .tab-nav {
-            display:flex;
-            gap:2px;
-            margin-bottom:var(--gap);
-            border-bottom:2px solid var(--border);
-            padding-bottom:0;
-        }
-        .tab-btn {
-            padding:10px 22px;
-            font-size:13px;
-            font-weight:700;
-            border:none;
-            background:none;
-            cursor:pointer;
-            color:var(--muted);
-            border-bottom:2px solid transparent;
-            margin-bottom:-2px;
-            border-radius:8px 8px 0 0;
-            transition:all .15s;
-            letter-spacing:.2px;
-            font-family:inherit;
-        }
-        .tab-btn:hover { color:var(--run-plum); background:rgba(34,0,75,.05); }
-        .tab-btn.active {
-            color:var(--run-purple);
-            border-bottom-color:var(--run-purple);
-            background:rgba(163,31,255,.06);
-        }
         .tab-panel { display:none; }
         .tab-panel.active { display:block; }
+        .content-section { display:none; }
+        .content-section.active { display:block; }
 
         /* COMPARE TAB */
+        #period-selector { margin-bottom:0; border-radius:0; box-shadow:none; border-top:1px solid var(--border); gap:24px; }
         .cmp-header {
             background:var(--card);
             border-radius:var(--radius);
@@ -301,17 +312,18 @@
         .chip-yoy { background:rgba(75,63,255,.1); color:#2a1fb5; }
         .chip-dot { width:8px; height:8px; border-radius:50%; display:inline-block; }
 
-        .cmp-kpi-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:var(--gap); margin-bottom:var(--gap); }
+        .cmp-kpi-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:var(--gap); margin-bottom:var(--gap); }
         .cmp-kpi {
-            background:var(--card);
+            background:linear-gradient(160deg,#fff 60%,rgba(163,31,255,.04) 100%);
             border-radius:var(--radius);
-            padding:18px 20px;
+            padding:22px 24px 18px;
             box-shadow:0 2px 8px rgba(34,0,75,.07);
-            border-left:4px solid var(--run-purple);
+            border-top:4px solid var(--run-purple);
         }
         .cmp-kpi-label { font-size:10.5px; text-transform:uppercase; letter-spacing:.6px; color:var(--muted); margin-bottom:10px; font-weight:700; }
-        .cmp-kpi-main { font-size:22px; font-weight:800; margin-bottom:8px; color:var(--run-plum); }
-        .cmp-kpi-row { display:flex; justify-content:space-between; padding:4px 0; border-top:1px solid var(--border); font-size:11.5px; }
+        .cmp-kpi-main { font-size:26px; font-weight:800; margin-bottom:4px; color:var(--run-plum); line-height:1; }
+        .cmp-kpi-divider { border:none; border-top:1px solid var(--border); margin:10px 0 4px; }
+        .cmp-kpi-row { display:flex; justify-content:space-between; padding:5px 0; border-top:1px solid var(--border); font-size:11.5px; }
         .cmp-kpi-row span:first-child { color:var(--muted); }
         .delta-pos { color:#16a34a; font-weight:700; }
         .delta-neg { color:#F6025E; font-weight:700; }
@@ -328,8 +340,19 @@
         .th-yoy { background:rgba(75,63,255,.15); color:#1a0f80 !important; }
         .th-delta { color:var(--muted) !important; font-size:10px; }
 
+
+        /* BUDGET COMPARISON */
+        .chip-bud { background:rgba(22,163,74,.12); color:#14532d; }
+        .col-bud { background:rgba(22,163,74,.04); }
+        .th-bud { background:rgba(22,163,74,.15); color:#14532d !important; }
+        .th-delta-bud { color:var(--muted) !important; font-size:10px; }
+        .bud-fav  { color:#16a34a; font-weight:700; }
+        .bud-unfav{ color:#F6025E; font-weight:700; }
+        .bud-neu  { color:var(--muted); font-weight:500; }
+        .kpi-bud-row { display:flex; justify-content:space-between; align-items:center; margin-top:6px; padding-top:6px; border-top:1px dashed rgba(22,163,74,.3); font-size:11px; }
+
         @media(max-width:1100px) {
-            .kpi-row { grid-template-columns:repeat(3,1fr); }
+            .kpi-row { grid-template-columns:repeat(2,1fr); }
             .charts-2,.charts-3,.charts-13 { grid-template-columns:1fr; }
             .cmp-kpi-grid { grid-template-columns:repeat(2,1fr); }
         }
@@ -342,43 +365,49 @@
 <body>
 <div class="wrap">
 
+    <div class="sticky-nav">
     <!-- HEADER -->
     <div class="header">
         <div class="header-brand">
-            <h1><span class="brand-run">run</span><span class="brand-label">payments · Profit &amp; Loss</span></h1>
-            <div class="sub">Jan 2023 – Dec 2025 · Accrual Basis</div>
-        </div>
-        <div class="filters">
-            <div class="filter-grp">
-                <label>Year</label>
-                <select id="f-year" onchange="dash.filter()">
-                    <option value="all">All Years</option>
-                    <option value="ttm">TTM</option>
-                    <option value="2026">2026</option>
-                    <option value="2025">2025</option>
-                    <option value="2024">2024</option>
-                    <option value="2023">2023</option>
-                </select>
-            </div>
-            <div class="filter-grp">
-                <label>View</label>
-                <select id="f-view" onchange="dash.filter()">
-                    <option value="monthly">Monthly</option>
-                    <option value="quarterly">Quarterly</option>
-                </select>
-            </div>
+            <h1><span class="brand-run">run</span><span class="brand-label">payments</span></h1>
+            <div class="brand-sub">Finance Dashboard</div>
         </div>
     </div>
 
-    <!-- TAB NAV -->
-    <div class="tab-nav">
-        <button class="tab-btn active" onclick="switchTab('overview',this)">📊 Overview</button>
-        <button class="tab-btn" onclick="switchTab('compare',this)">🔍 Month Comparison</button>
-        <button class="tab-btn" onclick="switchTab('quarterly',this)">📅 Quarterly Comparison</button>
+    <!-- PERIOD SELECTOR -->
+    <div id="period-selector" class="cmp-header">
+        <div class="filter-grp">
+            <label>Period Type</label>
+            <select id="pt-type" onchange="updatePeriodOptions(); masterRender();">
+                <option value="year">Year</option>
+                <option value="month">Month</option>
+                <option value="quarter">Quarter</option>
+            </select>
+        </div>
+        <div class="filter-grp">
+            <label>Period</label>
+            <select id="pt-period" onchange="masterRender()"></select>
+        </div>
+        <!-- Hidden legacy selects — always in DOM for class constructors & render logic -->
+        <select id="f-year" style="display:none">
+            <option value="all">All Years</option>
+            <option value="ttm">TTM</option>
+            <option value="2026" selected>2026</option>
+            <option value="2025">2025</option>
+            <option value="2024">2024</option>
+            <option value="2023">2023</option>
+        </select>
+        <select id="f-view" style="display:none">
+            <option value="monthly" selected>Monthly</option>
+            <option value="quarterly">Quarterly</option>
+        </select>
+        <select id="cmp-month" style="display:none"></select>
+        <select id="qtr-period" style="display:none"></select>
     </div>
+    </div><!-- /sticky-nav -->
 
-    <!-- TAB: OVERVIEW -->
-    <div id="tab-overview" class="tab-panel active">
+    <!-- SECTION: OVERVIEW (Year view) -->
+    <div id="sec-overview" class="content-section active">
 
     <!-- KPIs -->
     <div class="section-title">Key Metrics</div>
@@ -401,7 +430,7 @@
     <div class="section-title">Profitability</div>
     <div class="chart-row charts-2">
         <div class="chart-box">
-            <h3>Net Income Trend <span class="badge">Monthly</span></h3>
+            <h3>EBITDA Trend <span class="badge">Monthly</span></h3>
             <canvas id="c-netincome"></canvas>
         </div>
         <div class="chart-box">
@@ -430,18 +459,13 @@
         <div id="pl-table"></div>
     </div>
 
-    </div><!-- /tab-overview -->
+    </div><!-- /sec-overview -->
 
-    <!-- TAB: MONTH COMPARISON -->
-    <div id="tab-compare" class="tab-panel">
+    <!-- SECTION: MONTH COMPARISON -->
+    <div id="sec-compare" class="content-section">
 
-        <!-- Period selector -->
-        <div class="cmp-header">
-            <div>
-                <label>Selected Month</label><br>
-                <select id="cmp-month" onchange="cmpDash.render()" style="margin-top:6px;">
-                </select>
-            </div>
+        <!-- Period chips (selected period displayed inline) -->
+        <div class="cmp-header" style="padding:10px 20px;">
             <div class="period-chips" id="cmp-chips"></div>
         </div>
 
@@ -469,18 +493,13 @@
             <div id="cmp-pl-table"></div>
         </div>
 
-    </div><!-- /tab-compare -->
+    </div><!-- /sec-compare -->
 
-    <!-- TAB: QUARTERLY COMPARISON -->
-    <div id="tab-quarterly" class="tab-panel">
+    <!-- SECTION: QUARTERLY COMPARISON -->
+    <div id="sec-quarterly" class="content-section">
 
-        <!-- Period selector -->
-        <div class="cmp-header">
-            <div>
-                <label>Selected Quarter</label><br>
-                <select id="qtr-period" onchange="qtrDash.render()" style="margin-top:6px;">
-                </select>
-            </div>
+        <!-- Period chips -->
+        <div class="cmp-header" style="padding:10px 20px;">
             <div class="period-chips" id="qtr-chips"></div>
         </div>
 
@@ -508,7 +527,7 @@
             <div id="qtr-pl-table"></div>
         </div>
 
-    </div><!-- /tab-quarterly -->
+    </div><!-- /sec-quarterly -->
 
     <footer><strong>run payments</strong> · Accrual Basis · Data through December 2025</footer>
 </div>
@@ -523,14 +542,141 @@ const RAW = [];
 // HELPERS
 // ============================================================
 const COLORS = ['#22004B','#A31FFF','#4B3FFF','#FF6A00','#F6025E','#CC00CC','#16a34a','#7B6995'];
+// ============================================================
+// BUDGET DATA (2025–2026)
+// Note: Processing Revenue not split by processor in budget
+// (processingRevenue = combined Fiserv+Payroc; individual lines show N/A)
+// ============================================================
+const BUDGET_DATA = {
+  "January 2023":  { totalIncome:127521.15, totalCOGS:96168.44,  grossProfit:31352.71,  totalExpenses:69468.92,  netIncome:-38116.21, processingRevenue:115021.15, advisoryRevenue:12500,  equipmentRevenue:0,     fiservCommissions:90638.3,  personnelExpenses:9313.96,   facilities:2600,   professionalFees:20000, travelMeals:9750,   itCosts:15000,   marketing:5329.96,  insurance:975,   officeSupplies:1300,   feesDues:650 },
+  "February 2023": { totalIncome:163412.47, totalCOGS:109504.63, grossProfit:53907.84,  totalExpenses:244516.56, netIncome:-190608.72,processingRevenue:133412.47, advisoryRevenue:30000,  equipmentRevenue:0,     fiservCommissions:101885.72,personnelExpenses:180396.67, facilities:2600,   professionalFees:20050, travelMeals:9774.38,itCosts:15037.5, marketing:9164.33,  insurance:977.44,officeSupplies:1303.25,feesDues:651.62 },
+  "March 2023":    { totalIncome:198851.29, totalCOGS:83080.39,  grossProfit:115770.9,  totalExpenses:269870.42, netIncome:-154099.52,processingRevenue:168851.29, advisoryRevenue:30000,  equipmentRevenue:0,     fiservCommissions:72130.75, personnelExpenses:195102.92, facilities:2600,   professionalFees:20100.12,travelMeals:9798.81,itCosts:15075.09,marketing:19681.05, insurance:979.88,officeSupplies:1306.51,feesDues:653.25 },
+  "April 2023":    { totalIncome:231795.94, totalCOGS:107422.57, grossProfit:124373.37, totalExpenses:271464.06, netIncome:-147090.69,processingRevenue:204295.94, advisoryRevenue:27500,  equipmentRevenue:0,     fiservCommissions:93142.22, personnelExpenses:195102.92, facilities:2600,   professionalFees:20150.38,travelMeals:9823.31,itCosts:15112.78,marketing:21143.47, insurance:982.33,officeSupplies:1309.77,feesDues:654.89 },
+  "May 2023":      { totalIncome:269774.49, totalCOGS:133137.96, grossProfit:136636.53, totalExpenses:273680.34, netIncome:-137043.81,processingRevenue:242274.49, advisoryRevenue:27500,  equipmentRevenue:0,     fiservCommissions:115262.49,personnelExpenses:195102.92, facilities:2600,   professionalFees:20200.75,travelMeals:9847.87,itCosts:15150.56,marketing:23228.21, insurance:984.79,officeSupplies:1313.05,feesDues:656.52 },
+  "June 2023":     { totalIncome:326521.6,  totalCOGS:172863.97, grossProfit:153657.63, totalExpenses:276705.8,  netIncome:-123048.17,processingRevenue:299021.6,  advisoryRevenue:27500,  equipmentRevenue:0,     fiservCommissions:149278.53,personnelExpenses:195102.92, facilities:2600,   professionalFees:20251.25,travelMeals:9872.49,itCosts:15188.44,marketing:26121.8,  insurance:987.25,officeSupplies:1316.33,feesDues:658.17 },
+  "July 2023":     { totalIncome:380160.82, totalCOGS:206467.66, grossProfit:173693.16, totalExpenses:289067.79, netIncome:-115374.63,processingRevenue:347660.82, advisoryRevenue:32500,  equipmentRevenue:0,     fiservCommissions:178194.29,personnelExpenses:203926.67, facilities:2600,   professionalFees:20301.88,travelMeals:9897.17,itCosts:15226.41,marketing:29527.84, insurance:989.72,officeSupplies:1319.62,feesDues:659.81 },
+  "August 2023":   { totalIncome:421758.13, totalCOGS:242353.88, grossProfit:179404.25, totalExpenses:290171.21, netIncome:-110766.96,processingRevenue:399258.13, advisoryRevenue:22500,  equipmentRevenue:0,     fiservCommissions:209377.58,personnelExpenses:203926.67, facilities:2600,   professionalFees:20352.64,travelMeals:9921.91,itCosts:15264.48,marketing:30498.72, insurance:992.19,officeSupplies:1322.92,feesDues:661.46 },
+  "September 2023":{ totalIncome:501081.16, totalCOGS:295187.03, grossProfit:205894.13, totalExpenses:317341.94, netIncome:-111447.81,processingRevenue:478581.16, advisoryRevenue:22500,  equipmentRevenue:0,     fiservCommissions:254725.49,personnelExpenses:214711.25, facilities:14350, professionalFees:20403.52,travelMeals:9946.71,itCosts:15302.64,marketing:35002,    insurance:994.67,officeSupplies:1326.23,feesDues:663.11 },
+  "October 2023":  { totalIncome:551197.25, totalCOGS:329352.69, grossProfit:221844.57, totalExpenses:320186.71, netIncome:-98342.14, processingRevenue:528697.25, advisoryRevenue:22500,  equipmentRevenue:0,     fiservCommissions:283768.56,personnelExpenses:214711.25, facilities:14350, professionalFees:20454.53,travelMeals:9971.58,itCosts:15340.89,marketing:37713.58, insurance:997.16,officeSupplies:1329.54,feesDues:664.77 },
+  "November 2023": { totalIncome:564779.08, totalCOGS:340882.45, grossProfit:223896.63, totalExpenses:320669.09, netIncome:-96772.46, processingRevenue:542279.08, advisoryRevenue:22500,  equipmentRevenue:0,     fiservCommissions:293857.35,personnelExpenses:214711.25, facilities:14350, professionalFees:20505.66,travelMeals:9996.51,itCosts:15379.25,marketing:38062.43, insurance:999.65,officeSupplies:1332.87,feesDues:666.43 },
+  "December 2023": { totalIncome:692854.13, totalCOGS:434468.86, grossProfit:258385.27, totalExpenses:326666.02, netIncome:-68280.75, processingRevenue:670354.13, advisoryRevenue:22500,  equipmentRevenue:0,     fiservCommissions:374772.93,personnelExpenses:214711.25, facilities:14350, professionalFees:20556.93,travelMeals:10021.5,itCosts:15417.7, marketing:43925.5,  insurance:1002.15,officeSupplies:1336.2, feesDues:668.1 },
+  "January 2024":  { totalIncome:359044.52, totalCOGS:246686.04, grossProfit:112358.48, totalExpenses:274647.96, netIncome:-180289.48,processingRevenue:334044.52, advisoryRevenue:10000,  equipmentRevenue:15000, fiservCommissions:231486.04,personnelExpenses:198121.46, facilities:3567,   professionalFees:27500, travelMeals:20000,  itCosts:8301.5,  marketing:12600,    insurance:808,   officeSupplies:2500,   feesDues:500 },
+  "February 2024": { totalIncome:387816,    totalCOGS:266297.51, grossProfit:121518.49, totalExpenses:281444.73, netIncome:-187926.24,processingRevenue:357816,    advisoryRevenue:15000,  equipmentRevenue:15000, fiservCommissions:251097.51,personnelExpenses:204128.23, facilities:8567,   professionalFees:25000, travelMeals:20000,  itCosts:7641.5,  marketing:11550,    insurance:808,   officeSupplies:2500,   feesDues:500 },
+  "March 2024":    { totalIncome:429448.87, totalCOGS:295097.03, grossProfit:134351.85, totalExpenses:290134.73, netIncome:-170782.88,processingRevenue:394448.87, advisoryRevenue:20000,  equipmentRevenue:15000, fiservCommissions:279897.03,personnelExpenses:204128.23, facilities:11567,  professionalFees:25000, travelMeals:20000,  itCosts:8636.5,  marketing:15745,    insurance:808,   officeSupplies:3000,   feesDues:500 },
+  "April 2024":    { totalIncome:455589.25, totalCOGS:317137.03, grossProfit:138452.21, totalExpenses:295934.73, netIncome:-157482.52,processingRevenue:420589.25, advisoryRevenue:20000,  equipmentRevenue:15000, fiservCommissions:301937.03,personnelExpenses:204128.23, facilities:11567,  professionalFees:25000, travelMeals:20000,  itCosts:17386.5, marketing:12795,    insurance:808,   officeSupplies:3000,   feesDues:500 },
+  "May 2024":      { totalIncome:495541.86, totalCOGS:349149.54, grossProfit:146392.32, totalExpenses:286860.56, netIncome:-140468.24,processingRevenue:460541.86, advisoryRevenue:20000,  equipmentRevenue:15000, fiservCommissions:333949.54,personnelExpenses:213499.06, facilities:11567,  professionalFees:25000, travelMeals:20000,  itCosts:7386.5,  marketing:4350,     insurance:808,   officeSupplies:3000,   feesDues:500 },
+  "June 2024":     { totalIncome:528338.25, totalCOGS:376680.76, grossProfit:151657.49, totalExpenses:296720.56, netIncome:-145063.07,processingRevenue:493338.25, advisoryRevenue:20000,  equipmentRevenue:15000, fiservCommissions:361480.76,personnelExpenses:213499.06, facilities:11567,  professionalFees:25000, travelMeals:20000,  itCosts:9296.5,  marketing:12300,    insurance:808,   officeSupplies:3000,   feesDues:500 },
+  "July 2024":     { totalIncome:577332.29, totalCOGS:415678.24, grossProfit:161654.05, totalExpenses:324202.33, netIncome:-168548.28,processingRevenue:542332.29, advisoryRevenue:20000,  equipmentRevenue:15000, fiservCommissions:400478.24,personnelExpenses:219505.83, facilities:11567,  professionalFees:25000, travelMeals:20000,  itCosts:29776.5, marketing:13295,    insurance:808,   officeSupplies:3000,   feesDues:500 },
+  "August 2024":   { totalIncome:619170.1,  totalCOGS:450194.44, grossProfit:168975.67, totalExpenses:292917.33, netIncome:-123941.67,processingRevenue:584170.1,  advisoryRevenue:20000,  equipmentRevenue:15000, fiservCommissions:434994.44,personnelExpenses:219505.83, facilities:11567,  professionalFees:25000, travelMeals:20000,  itCosts:7386.5,  marketing:4400,     insurance:808,   officeSupplies:3000,   feesDues:500 },
+  "September 2024":{ totalIncome:662425.94, totalCOGS:486354.71, grossProfit:176071.24, totalExpenses:297931.33, netIncome:-121860.1, processingRevenue:627425.94, advisoryRevenue:20000,  equipmentRevenue:15000, fiservCommissions:471154.71,personnelExpenses:219505.83, facilities:11567,  professionalFees:25000, travelMeals:20000,  itCosts:8900.5,  marketing:7900,     insurance:808,   officeSupplies:3000,   feesDues:500 },
+  "October 2024":  { totalIncome:718059.48, totalCOGS:531778.17, grossProfit:186281.31, totalExpenses:292880.33, netIncome:-106599.03,processingRevenue:683059.48, advisoryRevenue:20000,  equipmentRevenue:15000, fiservCommissions:516578.17,personnelExpenses:219505.83, facilities:10650,  professionalFees:25000, travelMeals:20000,  itCosts:8766.5,  marketing:3900,     insurance:808,   officeSupplies:3000,   feesDues:500 },
+  "November 2024": { totalIncome:777012.76, totalCOGS:580414.63, grossProfit:196598.13, totalExpenses:311550.33, netIncome:-114952.2, processingRevenue:742012.76, advisoryRevenue:20000,  equipmentRevenue:15000, fiservCommissions:565214.63,personnelExpenses:219505.83, facilities:10650,  professionalFees:25000, travelMeals:20000,  itCosts:7386.5,  marketing:23950,    insurance:808,   officeSupplies:3000,   feesDues:500 },
+  "December 2024": { totalIncome:835949.52, totalCOGS:629985.86, grossProfit:205963.66, totalExpenses:302200.33, netIncome:-96236.67, processingRevenue:800949.52, advisoryRevenue:20000,  equipmentRevenue:15000, fiservCommissions:614785.86,personnelExpenses:219505.83, facilities:10650,  professionalFees:25000, travelMeals:20000,  itCosts:8636.5,  marketing:13350,    insurance:808,   officeSupplies:3000,   feesDues:500 },
+  "January 2025":   { totalIncome:977923,  totalCOGS:657081,  grossProfit:320842,  totalExpenses:320355, netIncome:-42053,  processingRevenue:952923,  advisoryRevenue:10000, equipmentRevenue:15000, fiservCommissions:642081, personnelExpenses:239178, facilities:8314,  professionalFees:15000, travelMeals:20000, itCosts:23526, marketing:8687,  insurance:900, officeSupplies:3500, feesDues:1250 },
+  "February 2025":  { totalIncome:1009380, totalCOGS:676924,  grossProfit:332456,  totalExpenses:320084, netIncome:-30656,  processingRevenue:979380,  advisoryRevenue:15000, equipmentRevenue:15000, fiservCommissions:661924, personnelExpenses:216032, facilities:8314,  professionalFees:15000, travelMeals:20000, itCosts:23526, marketing:31562, insurance:900, officeSupplies:3500, feesDues:1250 },
+  "March 2025":     { totalIncome:1056360, totalCOGS:708410,  grossProfit:347950,  totalExpenses:352134, netIncome:-47791,  processingRevenue:1021360, advisoryRevenue:20000, equipmentRevenue:15000, fiservCommissions:693410, personnelExpenses:244157, facilities:8314,  professionalFees:15000, travelMeals:35000, itCosts:31526, marketing:12487, insurance:900, officeSupplies:3500, feesDues:1250 },
+  "April 2025":     { totalIncome:1106550, totalCOGS:746052,  grossProfit:360498,  totalExpenses:344563, netIncome:-28155,  processingRevenue:1071550, advisoryRevenue:20000, equipmentRevenue:15000, fiservCommissions:731052, personnelExpenses:236281, facilities:8314,  professionalFees:15000, travelMeals:20000, itCosts:31526, marketing:27792, insurance:900, officeSupplies:3500, feesDues:1250 },
+  "May 2025":       { totalIncome:1159075, totalCOGS:785445,  grossProfit:373630,  totalExpenses:332689, netIncome:-3542,   processingRevenue:1124075, advisoryRevenue:20000, equipmentRevenue:15000, fiservCommissions:770445, personnelExpenses:244157, facilities:8314,  professionalFees:15000, travelMeals:20000, itCosts:31526, marketing:8042,  insurance:900, officeSupplies:3500, feesDues:1250 },
+  "June 2025":      { totalIncome:1213350, totalCOGS:826152,  grossProfit:387198,  totalExpenses:338763, netIncome:-6394,   processingRevenue:1178350, advisoryRevenue:20000, equipmentRevenue:15000, fiservCommissions:811152, personnelExpenses:236281, facilities:8314,  professionalFees:15000, travelMeals:35000, itCosts:31526, marketing:6992,  insurance:900, officeSupplies:3500, feesDues:1250 },
+  "July 2025":      { totalIncome:1269376, totalCOGS:868171,  grossProfit:401205,  totalExpenses:347868, netIncome:-1812,   processingRevenue:1234376, advisoryRevenue:20000, equipmentRevenue:15000, fiservCommissions:853171, personnelExpenses:249136, facilities:8314,  professionalFees:15000, travelMeals:20000, itCosts:31526, marketing:18242, insurance:900, officeSupplies:3500, feesDues:1250 },
+  "August 2025":    { totalIncome:1346412, totalCOGS:925948,  grossProfit:420464,  totalExpenses:336318, netIncome:28805,   processingRevenue:1311412, advisoryRevenue:20000, equipmentRevenue:15000, fiservCommissions:910948, personnelExpenses:249136, facilities:8314,  professionalFees:15000, travelMeals:20000, itCosts:31526, marketing:6692,  insurance:900, officeSupplies:3500, feesDues:1250 },
+  "September 2025": { totalIncome:1427338, totalCOGS:986643,  grossProfit:440695,  totalExpenses:352543, netIncome:32651,   processingRevenue:1392338, advisoryRevenue:20000, equipmentRevenue:15000, fiservCommissions:971643, personnelExpenses:241099, facilities:9026,  professionalFees:15000, travelMeals:35000, itCosts:31526, marketing:15242, insurance:900, officeSupplies:3500, feesDues:1250 },
+  "October 2025":   { totalIncome:1512934, totalCOGS:1050840, grossProfit:462094,  totalExpenses:342008, netIncome:64564,   processingRevenue:1477934, advisoryRevenue:20000, equipmentRevenue:15000, fiservCommissions:1035840,personnelExpenses:254115, facilities:9026,  professionalFees:15000, travelMeals:20000, itCosts:31526, marketing:6692,  insurance:900, officeSupplies:3500, feesDues:1250 },
+  "November 2025":  { totalIncome:1558455, totalCOGS:1084981, grossProfit:473474,  totalExpenses:348811, netIncome:69152,   processingRevenue:1523455, advisoryRevenue:20000, equipmentRevenue:15000, fiservCommissions:1069981,personnelExpenses:245918, facilities:9026,  professionalFees:15000, travelMeals:20000, itCosts:31526, marketing:21692, insurance:900, officeSupplies:3500, feesDues:1250 },
+  "December 2025":  { totalIncome:1606700, totalCOGS:1121164, grossProfit:485536,  totalExpenses:357008, netIncome:73030,   processingRevenue:1571700, advisoryRevenue:20000, equipmentRevenue:15000, fiservCommissions:1106164,personnelExpenses:254115, facilities:9026,  professionalFees:15000, travelMeals:35000, itCosts:31526, marketing:6692,  insurance:900, officeSupplies:3500, feesDues:1250 },
+  "January 2026":   { totalIncome:1415059, totalCOGS:1039159, grossProfit:375900,  totalExpenses:388807, netIncome:-91277,  processingRevenue:1397559, advisoryRevenue:2500,  equipmentRevenue:15000, fiservCommissions:1021659,personnelExpenses:275833, facilities:18526, professionalFees:25000, travelMeals:20000, itCosts:32698, marketing:9750,  insurance:2000,officeSupplies:3500, feesDues:1500 },
+  "February 2026":  { totalIncome:1464592, totalCOGS:1077963, grossProfit:386629,  totalExpenses:369750, netIncome:-61591,  processingRevenue:1447092, advisoryRevenue:2500,  equipmentRevenue:15000, fiservCommissions:1060463,personnelExpenses:252776, facilities:18526, professionalFees:25000, travelMeals:20000, itCosts:32698, marketing:13750, insurance:2000,officeSupplies:3500, feesDues:1500 },
+  "March 2026":     { totalIncome:1748246, totalCOGS:1288770, grossProfit:459476,  totalExpenses:440259, netIncome:-59306,  processingRevenue:1730746, advisoryRevenue:2500,  equipmentRevenue:15000, fiservCommissions:1271270,personnelExpenses:294785, facilities:18526, professionalFees:25000, travelMeals:20000, itCosts:32698, marketing:42250, insurance:2000,officeSupplies:3500, feesDues:1500 },
+  "April 2026":     { totalIncome:1763048, totalCOGS:1304224, grossProfit:458824,  totalExpenses:399750, netIncome:-19520,  processingRevenue:1745548, advisoryRevenue:2500,  equipmentRevenue:15000, fiservCommissions:1286724,personnelExpenses:285275, facilities:18526, professionalFees:25000, travelMeals:20000, itCosts:32698, marketing:11250, insurance:2000,officeSupplies:3500, feesDues:1500 },
+  "May 2026":       { totalIncome:1862741, totalCOGS:1372508, grossProfit:490233,  totalExpenses:438112, netIncome:-26487,  processingRevenue:1845241, advisoryRevenue:2500,  equipmentRevenue:15000, fiservCommissions:1355008,personnelExpenses:322887, facilities:18526, professionalFees:25000, travelMeals:20000, itCosts:32698, marketing:12000, insurance:2000,officeSupplies:3500, feesDues:1500 },
+  "June 2026":      { totalIncome:1946932, totalCOGS:1376777, grossProfit:570155,  totalExpenses:442696, netIncome:48819,   processingRevenue:1854432, advisoryRevenue:2500,  equipmentRevenue:15000, fiservCommissions:1359277,personnelExpenses:312472, facilities:18526, professionalFees:25000, travelMeals:35000, itCosts:32698, marketing:12000, insurance:2000,officeSupplies:3500, feesDues:1500 },
+  "July 2026":      { totalIncome:1974795, totalCOGS:1445817, grossProfit:528978,  totalExpenses:458612, netIncome:-8210,   processingRevenue:1957295, advisoryRevenue:2500,  equipmentRevenue:15000, fiservCommissions:1428317,personnelExpenses:322887, facilities:18526, professionalFees:25000, travelMeals:20000, itCosts:32698, marketing:32500, insurance:2000,officeSupplies:3500, feesDues:1500 },
+  "August 2026":    { totalIncome:2015895, totalCOGS:1479770, grossProfit:536125,  totalExpenses:438112, netIncome:19397,   processingRevenue:1998395, advisoryRevenue:2500,  equipmentRevenue:15000, fiservCommissions:1462270,personnelExpenses:322887, facilities:18526, professionalFees:25000, travelMeals:20000, itCosts:32698, marketing:12000, insurance:2000,officeSupplies:3500, feesDues:1500 },
+  "September 2026": { totalIncome:2107208, totalCOGS:1560202, grossProfit:547006,  totalExpenses:432196, netIncome:36189,   processingRevenue:2089008, advisoryRevenue:2500,  equipmentRevenue:15000, fiservCommissions:1542702,personnelExpenses:312472, facilities:18526, professionalFees:25000, travelMeals:20000, itCosts:32698, marketing:16500, insurance:2000,officeSupplies:3500, feesDues:1500 },
+  "October 2026":   { totalIncome:2337891, totalCOGS:1721360, grossProfit:616531,  totalExpenses:440112, netIncome:97820,   processingRevenue:2318991, advisoryRevenue:2500,  equipmentRevenue:15000, fiservCommissions:1703860,personnelExpenses:322887, facilities:18526, professionalFees:25000, travelMeals:20000, itCosts:32698, marketing:14000, insurance:2000,officeSupplies:3500, feesDues:1500 },
+  "November 2026":  { totalIncome:2255520, totalCOGS:1663883, grossProfit:591637,  totalExpenses:484696, netIncome:28438,   processingRevenue:2235920, advisoryRevenue:2500,  equipmentRevenue:15000, fiservCommissions:1646383,personnelExpenses:312472, facilities:18526, professionalFees:25000, travelMeals:50000, itCosts:32698, marketing:39000, insurance:2000,officeSupplies:3500, feesDues:1500 },
+  "December 2026":  { totalIncome:2591459, totalCOGS:1859193, grossProfit:732266,  totalExpenses:440112, netIncome:213653,  processingRevenue:2496159, advisoryRevenue:2500,  equipmentRevenue:15000, fiservCommissions:1841693,personnelExpenses:322887, facilities:18526, professionalFees:25000, travelMeals:20000, itCosts:32698, marketing:14000, insurance:2000,officeSupplies:3500, feesDues:1500 },
+};
+
+function getBudgetMonth(monthStr) { return BUDGET_DATA[monthStr] || null; }
+
+function getBudgetVal(bud, key) {
+    if (!bud) return null;
+    if (key === 'fiservRevenue' || key === 'payrocRevenue') return null;
+    if (key === 'netOperatingIncome') return (bud.grossProfit||0) - (bud.totalExpenses||0);
+    if (key === '_equipCOGS') return (bud.totalCOGS||0) - (bud.fiservCommissions||0);
+    const direct = ['totalIncome','totalCOGS','grossProfit','totalExpenses','netIncome',
+                    'processingRevenue','advisoryRevenue','equipmentRevenue','fiservCommissions',
+                    'personnelExpenses','facilities','professionalFees','travelMeals','itCosts',
+                    'marketing','insurance','officeSupplies','feesDues'];
+    return direct.includes(key) ? (bud[key] ?? null) : null;
+}
+
+function getBudgetQuarter(quarterStr) {
+    const qNum = parseInt(quarterStr[1]);
+    const yr   = quarterStr.split(' ')[1];
+    const MO   = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+    const startMo = (qNum - 1) * 3;
+    const monthStrs = MO.slice(startMo, startMo + 3).map(m => m + ' ' + yr);
+    const buds = monthStrs.map(m => BUDGET_DATA[m]).filter(Boolean);
+    if (!buds.length) return null;
+    const r = {};
+    const fields = ['totalIncome','totalCOGS','grossProfit','totalExpenses','netIncome',
+                    'processingRevenue','advisoryRevenue','equipmentRevenue','fiservCommissions',
+                    'personnelExpenses','facilities','professionalFees','travelMeals',
+                    'itCosts','marketing','insurance','officeSupplies','feesDues'];
+    fields.forEach(f => { r[f] = buds.reduce((s, b) => s + (b[f]||0), 0); });
+    r.netOperatingIncome = r.grossProfit - r.totalExpenses;
+    return r;
+}
+
+function fmtBudVar(actual, budVal, isExpense) {
+    if (budVal === null || budVal === undefined) return '<span class="bud-neu">—</span>';
+    const diff = actual - budVal;
+    const pct  = budVal !== 0 ? (diff / Math.abs(budVal)) * 100 : null;
+    const fav  = isExpense ? diff <= 0 : diff >= 0;
+    const cls  = diff === 0 ? 'bud-neu' : (fav ? 'bud-fav' : 'bud-unfav');
+    const sign = diff >= 0 ? '+' : '';
+    const pctStr = pct !== null ? ' (' + sign + pct.toFixed(1) + '%)' : '';
+    return '<span class="' + cls + '">' + sign + fmt(diff) + pctStr + '</span>';
+}
+function fmtBudVarShort(actual, budVal, isExpense) {
+    if (budVal === null || budVal === undefined) return '<span class="bud-neu">—</span>';
+    const diff = actual - budVal;
+    const fav  = isExpense ? diff <= 0 : diff >= 0;
+    const cls  = diff === 0 ? 'bud-neu' : (fav ? 'bud-fav' : 'bud-unfav');
+    const sign = diff >= 0 ? '+' : '';
+    return '<span class="' + cls + '">' + sign + fmt(diff) + '</span>';
+}
+function fmtBudVarPct(actual, budVal, isExpense) {
+    if (budVal === null || budVal === undefined || budVal === 0) return '<span class="bud-neu">—</span>';
+    const diff = actual - budVal;
+    const pct  = (diff / Math.abs(budVal)) * 100;
+    const fav  = isExpense ? pct <= 0 : pct >= 0;
+    const cls  = diff === 0 ? 'bud-neu' : (fav ? 'bud-fav' : 'bud-unfav');
+    const sign = pct >= 0 ? '+' : '';
+    return '<span class="' + cls + '">' + sign + pct.toFixed(1) + '%</span>';
+}
+
+
+
+// Always display in $K with 1 decimal (used for chart tooltips)
+function fmtK(v) {
+    if (v == null) return '—';
+    const abs = Math.abs(v);
+    const parts = (abs / 1e3).toFixed(1).split('.');
+    parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    const s = '$' + parts.join('.') + 'K';
+    return v < 0 ? '(' + s + ')' : s;
+}
 
 function fmt(v, type='currency') {
     if (type==='currency') {
         const abs = Math.abs(v);
         let s;
-        if (abs >= 1e6) s = '$' + (abs/1e6).toFixed(2) + 'M';
+        if (abs >= 1e6) s = '$' + (abs/1e6).toFixed(1) + 'M';
         else if (abs >= 1e3) s = '$' + (abs/1e3).toFixed(1) + 'K';
-        else s = '$' + abs.toFixed(0);
+        else s = '$' + abs.toFixed(1);
         return v < 0 ? '(' + s + ')' : s;
     }
     if (type==='pct') return (v*100).toFixed(1) + '%';
@@ -599,12 +745,10 @@ class Dashboard {
         const totalCOGS = sum(d,'totalCOGS');
         const totalGP = sum(d,'grossProfit');
         const totalOpEx = sum(d,'totalExpenses');
-        const totalNI = sum(d,'netIncome');
-        const gpPct = totalRev > 0 ? totalGP/totalRev*100 : 0;
-
+        const totalNI = sum(d,'netOperatingIncome');
         // Compare to prior period — YTD-aware for incomplete years, TTM-aware
         const year = document.getElementById('f-year').value;
-        let prevRev = 0, prevCOGS = 0, prevGP = 0, prevGpPct = 0, prevOpEx = 0, prevNI = 0;
+        let prevRev = 0, prevCOGS = 0, prevGP = 0, prevOpEx = 0, prevNI = 0;
         let hasPrev = false, isYTD = false, isTTM = false, ytdThrough = '';
 
         if (year === 'ttm') {
@@ -615,9 +759,8 @@ class Dashboard {
                 prevRev   = sum(prev,'totalIncome');
                 prevCOGS  = sum(prev,'totalCOGS');
                 prevGP    = sum(prev,'grossProfit');
-                prevGpPct = prevRev > 0 ? prevGP/prevRev*100 : 0;
                 prevOpEx  = sum(prev,'totalExpenses');
-                prevNI    = sum(prev,'netIncome');
+                prevNI    = sum(prev,'netOperatingIncome');
             }
         } else if (year !== 'all') {
             const prevYear = String(parseInt(year) - 1);
@@ -634,9 +777,8 @@ class Dashboard {
                     prevRev   = sum(prev,'totalIncome');
                     prevCOGS  = sum(prev,'totalCOGS');
                     prevGP    = sum(prev,'grossProfit');
-                    prevGpPct = prevRev > 0 ? prevGP/prevRev*100 : 0;
-                    prevOpEx  = sum(prev,'totalExpenses');
-                    prevNI    = sum(prev,'netIncome');
+                        prevOpEx  = sum(prev,'totalExpenses');
+                    prevNI    = sum(prev,'netOperatingIncome');
                 }
             } else {
                 // Complete year → full year vs full prior year (unchanged behavior)
@@ -646,25 +788,12 @@ class Dashboard {
                     prevRev   = sum(prev,'totalIncome');
                     prevCOGS  = sum(prev,'totalCOGS');
                     prevGP    = sum(prev,'grossProfit');
-                    prevGpPct = prevRev > 0 ? prevGP/prevRev*100 : 0;
-                    prevOpEx  = sum(prev,'totalExpenses');
-                    prevNI    = sum(prev,'netIncome');
+                        prevOpEx  = sum(prev,'totalExpenses');
+                    prevNI    = sum(prev,'netOperatingIncome');
                 }
             }
-        } else {
-            // "All Years" → compare most recent complete year vs prior (2025 vs 2024)
-            const yr25 = RAW.filter(x => x.month.includes('2025'));
-            const yr24 = RAW.filter(x => x.month.includes('2024'));
-            if (yr25.length && yr24.length) {
-                hasPrev = true;
-                prevRev   = sum(yr24,'totalIncome');
-                prevCOGS  = sum(yr24,'totalCOGS');
-                prevGP    = sum(yr24,'grossProfit');
-                prevGpPct = prevRev > 0 ? prevGP/prevRev*100 : 0;
-                prevOpEx  = sum(yr24,'totalExpenses');
-                prevNI    = sum(yr24,'netIncome');
-            }
         }
+        // "All Years" → no prior-year comparison; budget row handles the full-period target
 
         const prevYearNum = (year !== 'all' && year !== 'ttm') ? String(parseInt(year)-1) : '2024';
         const yoyLabel = isTTM  ? 'vs prior 12mo'
@@ -672,40 +801,92 @@ class Dashboard {
                        : year === 'all' ? 'vs 2024'
                        : `vs ${prevYearNum}`;
 
+        const _pct = (v) => totalRev > 0 ? v / totalRev * 100 : 0;
         const kpis = [
-            { label:'Total Revenue',  val:totalRev,  prev:hasPrev?prevRev:0,   type:'currency', color:'blue',   exp:false },
-            { label:'Total COGS',     val:totalCOGS, prev:hasPrev?prevCOGS:0,  type:'currency', color:'orange', exp:true  },
-            { label:'Gross Profit',   val:totalGP,   prev:hasPrev?prevGP:0,    type:'currency', color:'green',  exp:false },
-            { label:'Gross Margin',   val:gpPct,     prev:hasPrev?prevGpPct:0, type:'pct1',     color:'purple', exp:false, isMargin:true },
-            { label:'Total OpEx',     val:totalOpEx, prev:hasPrev?prevOpEx:0,  type:'currency', color:'pink',   exp:true  },
-            { label:'Net Income',     val:totalNI,   prev:hasPrev?prevNI:0,    type:'currency', color:totalNI>=0?'green':'red', exp:false },
+            { label:'Total Revenue',  val:totalRev,  prev:hasPrev?prevRev:0,   type:'currency', color:'blue',   exp:false, pct:null },
+            { label:'Total COGS',     val:totalCOGS, prev:hasPrev?prevCOGS:0,  type:'currency', color:'orange', exp:true,  pct:_pct(totalCOGS) },
+            { label:'Gross Profit',   val:totalGP,   prev:hasPrev?prevGP:0,    type:'currency', color:'green',  exp:false, pct:_pct(totalGP) },
+            { label:'Total OpEx',     val:totalOpEx, prev:hasPrev?prevOpEx:0,  type:'currency', color:'pink',   exp:true,  pct:_pct(totalOpEx) },
+            { label:'EBITDA',         val:totalNI,   prev:hasPrev?prevNI:0,    type:'currency', color:totalNI>=0?'green':'red', exp:false, pct:_pct(totalNI) },
+            { label:'Cash Flow',      val:148500,    prev:132000,              type:'currency', color:'purple', exp:false, pct:null, dummy:true },
         ];
 
-        const html = kpis.map(k => {
-            let changeHtml = '';
-            if (hasPrev && k.prev !== 0) {
-                let chg;
-                if (k.isMargin) {
-                    // show pp change for margin
-                    chg = k.val - k.prev;
-                    const cls = chg >= 0 ? 'pos' : 'neg';
-                    const sign = chg >= 0 ? '+' : '';
-                    changeHtml = `<div class="kpi-change ${cls}">${sign}${chg.toFixed(1)}pp ${yoyLabel}</div>`;
-                } else {
-                    chg = ((k.val - k.prev) / Math.abs(k.prev)) * 100;
-                    const cls = k.exp ? (chg<=0?'pos':'neg') : (chg>=0?'pos':'neg');
-                    const sign = chg >= 0 ? '+' : '';
-                    changeHtml = `<div class="kpi-change ${cls}">${sign}${chg.toFixed(1)}% ${yoyLabel}</div>`;
-                }
+        // Budget KPI totals
+        let budRev=null, budCOGS=null, budGP=null, budOpEx=null, budNI=null;
+        if (year === 'ttm') {
+            // TTM: sum budget for the same 12 months used in the actual TTM slice
+            const ttmMonths = RAW.slice(-12).map(x => x.month);
+            const ttmBudMonths = ttmMonths.map(m => getBudgetMonth(m)).filter(Boolean);
+            if (ttmBudMonths.length) {
+                budRev  = ttmBudMonths.reduce((s,b) => s + b.totalIncome, 0);
+                budCOGS = ttmBudMonths.reduce((s,b) => s + b.totalCOGS, 0);
+                budGP   = ttmBudMonths.reduce((s,b) => s + b.grossProfit, 0);
+                budOpEx = ttmBudMonths.reduce((s,b) => s + b.totalExpenses, 0);
+                budNI   = ttmBudMonths.reduce((s,b) => s + (b.grossProfit - b.totalExpenses), 0);
             }
+        } else if (year === 'all') {
+            // All Years → budget through last closed month only (exclude 2026 and beyond)
+            const allBudMonths = RAW.filter(x => !x.month.includes('2026')).map(x => getBudgetMonth(x.month)).filter(Boolean);
+            if (allBudMonths.length) {
+                budRev  = allBudMonths.reduce((s,b) => s + b.totalIncome, 0);
+                budCOGS = allBudMonths.reduce((s,b) => s + b.totalCOGS, 0);
+                budGP   = allBudMonths.reduce((s,b) => s + b.grossProfit, 0);
+                budOpEx = allBudMonths.reduce((s,b) => s + b.totalExpenses, 0);
+                budNI   = allBudMonths.reduce((s,b) => s + (b.grossProfit - b.totalExpenses), 0);
+            }
+        } else if (year === '2023' || year === '2024' || year === '2025' || year === '2026') {
+            // Specific year: match only the months present in actual data (handles YTD)
+            const targetMonths = RAW.filter(x => x.month.includes(year)).map(x => x.month);
+            const allBudMonths = targetMonths.map(m => getBudgetMonth(m)).filter(Boolean);
+            if (allBudMonths.length) {
+                budRev  = allBudMonths.reduce((s,b) => s + b.totalIncome, 0);
+                budCOGS = allBudMonths.reduce((s,b) => s + b.totalCOGS, 0);
+                budGP   = allBudMonths.reduce((s,b) => s + b.grossProfit, 0);
+                budOpEx = allBudMonths.reduce((s,b) => s + b.totalExpenses, 0);
+                budNI   = allBudMonths.reduce((s,b) => s + (b.grossProfit - b.totalExpenses), 0);
+            }
+        }
+        const budVals = [budRev, budCOGS, budGP, budOpEx, budNI, null];
+
+        const html = kpis.map((k, ki) => {
             const valStr = k.type==='pct1' ? k.val.toFixed(1)+'%' : fmt(k.val);
             const ytdTag = isYTD ? `<span style="font-size:9px;font-weight:700;padding:1px 5px;border-radius:4px;background:rgba(163,31,255,.12);color:var(--run-purple);margin-left:5px;vertical-align:middle;letter-spacing:.3px;">YTD</span>`
                          : isTTM ? `<span style="font-size:9px;font-weight:700;padding:1px 5px;border-radius:4px;background:rgba(75,63,255,.12);color:#4B3FFF;margin-left:5px;vertical-align:middle;letter-spacing:.3px;">TTM</span>`
                          : '';
+            const pctSpan = k.pct !== null ? `<span style="font-size:13px;font-weight:500;color:var(--muted);margin-left:8px;">${k.pct.toFixed(1)}%</span>` : '';
+            const dummyBadge = k.dummy ? `<span style="font-size:9px;font-weight:700;padding:1px 5px;border-radius:4px;background:rgba(75,63,255,.12);color:#4B3FFF;margin-left:5px;vertical-align:middle;letter-spacing:.3px;">PLACEHOLDER</span>` : '';
+
+            // Budget comparison row
+            let budRow = '';
+            const bv = budVals[ki];
+            if (!k.dummy && bv !== null && bv !== undefined && bv !== 0 && k.type !== 'pct1') {
+                budRow = `<div class="cmp-kpi-row" style="border-top:1px dashed rgba(22,163,74,.3);padding-top:5px;">
+                    <span style="color:#14532d;font-weight:600;">vs Budget: ${fmt(bv)}</span>
+                    ${fmtBudVar(k.val, bv, k.exp)}
+                </div>`;
+            }
+
+            // Prior year comparison row
+            let yoyRow = '';
+            if (!k.dummy && hasPrev && k.prev !== 0) {
+                const abs = k.val - k.prev;
+                const pct = (abs / Math.abs(k.prev)) * 100;
+                const pos = k.exp ? abs <= 0 : abs >= 0;
+                const cls = abs === 0 ? 'delta-neu' : (pos ? 'delta-pos' : 'delta-neg');
+                const sign = abs >= 0 ? '+' : '';
+                yoyRow = `<div class="cmp-kpi-row">
+                    <span>${yoyLabel}</span>
+                    <span class="${cls}">${sign}${fmt(abs)} (${sign}${pct.toFixed(1)}%)</span>
+                </div>`;
+            }
+
+            const hasRows = budRow || yoyRow;
             return `<div class="kpi ${k.color}">
-                <div class="kpi-label">${k.label}${ytdTag}</div>
-                <div class="kpi-val" style="color:${k.val<0&&k.type==='currency'?'#F6025E':'inherit'}">${valStr}</div>
-                ${changeHtml}
+                <div class="kpi-label">${k.label}${ytdTag}${dummyBadge}</div>
+                <div class="kpi-val" style="color:${k.val<0&&k.type==='currency'?'#F6025E':'inherit'}">${valStr}${pctSpan}</div>
+                ${hasRows ? '<hr class="kpi-divider">' : ''}
+                ${budRow}
+                ${yoyRow}
             </div>`;
         }).join('');
 
@@ -726,6 +907,14 @@ class Dashboard {
 
     buildRevenueChart() {
         const ctx = document.getElementById('c-revenue').getContext('2d');
+        const opts = this.lineOpts('currency');
+        // Pin Gross Profit legend key to its correct green regardless of per-bar array colour
+        opts.plugins.legend.labels.generateLabels = chart => {
+            const items = Chart.defaults.plugins.legend.labels.generateLabels(chart);
+            const gp = items.find(i => i.text === 'Gross Profit');
+            if (gp) { gp.fillStyle = '#16a34a88'; gp.strokeStyle = '#16a34a'; }
+            return items;
+        };
         this.charts.revenue = new Chart(ctx, {
             type: 'bar',
             data: {
@@ -736,7 +925,7 @@ class Dashboard {
                     { label:'Gross Profit', data: this.filtered.map(d=>d.grossProfit), backgroundColor: this.filtered.map(d=>d.grossProfit>=0?'#16a34a88':'#F6025E88'), borderRadius:3 },
                 ]
             },
-            options: this.lineOpts('currency')
+            options: opts
         });
     }
 
@@ -759,7 +948,7 @@ class Dashboard {
                     legend:{ position:'bottom', labels:{ usePointStyle:true, padding:10, font:{size:11} } },
                     tooltip:{ callbacks:{ label: ctx => {
                         const total = ctx.dataset.data.reduce((a,b)=>a+b,0);
-                        return ` ${ctx.label}: ${fmt(ctx.parsed)} (${(ctx.parsed/total*100).toFixed(1)}%)`;
+                        return ` ${ctx.label}: ${fmtK(ctx.parsed)} (${(ctx.parsed/total*100).toFixed(1)}%)`;
                     }}}
                 }
             }
@@ -773,10 +962,10 @@ class Dashboard {
             data: {
                 labels: this.getLabels(),
                 datasets:[{
-                    label:'Net Income',
-                    data: this.filtered.map(d=>d.netIncome),
-                    backgroundColor: this.filtered.map(d=>d.netIncome>=0?'#16a34a99':'#F6025E66'),
-                    borderColor: this.filtered.map(d=>d.netIncome>=0?'#16a34a':'#F6025E'),
+                    label:'EBITDA',
+                    data: this.filtered.map(d=>d.netOperatingIncome),
+                    backgroundColor: this.filtered.map(d=>d.netOperatingIncome>=0?'#16a34a99':'#F6025E66'),
+                    borderColor: this.filtered.map(d=>d.netOperatingIncome>=0?'#16a34a':'#F6025E'),
                     borderWidth:1, borderRadius:3
                 }]
             },
@@ -784,7 +973,7 @@ class Dashboard {
                 ...this.lineOpts('currency'),
                 plugins:{
                     legend:{display:false},
-                    tooltip:{ callbacks:{ label: ctx => ' Net Income: ' + fmt(ctx.parsed.y) }}
+                    tooltip:{ callbacks:{ label: ctx => ' EBITDA: ' + fmtK(ctx.parsed.y) }}
                 }
             }
         });
@@ -806,10 +995,13 @@ class Dashboard {
             options: {
                 responsive:true, maintainAspectRatio:false,
                 interaction:{ mode:'index', intersect:false },
-                plugins:{ legend:{ position:'top', labels:{ usePointStyle:true, padding:16, font:{size:11} }} },
+                plugins:{
+                    legend:{ position:'top', labels:{ usePointStyle:true, padding:16, font:{size:11} }},
+                    tooltip:{ callbacks:{ label: ctx => ` ${ctx.dataset.label}: ${ctx.parsed.y.toFixed(1)}%` }}
+                },
                 scales:{
                     x:{ grid:{display:false}, ticks:{font:{size:10}} },
-                    y:{ ticks:{ callback: v => v.toFixed(0)+'%', font:{size:10} }, grid:{color:'#E8E0F5'} }
+                    y:{ ticks:{ callback: v => v.toFixed(1)+'%', font:{size:10} }, grid:{color:'#E8E0F5'} }
                 }
             }
         });
@@ -835,7 +1027,10 @@ class Dashboard {
             options:{
                 responsive:true, maintainAspectRatio:false,
                 interaction:{ mode:'index', intersect:false },
-                plugins:{ legend:{ position:'bottom', labels:{ usePointStyle:true, padding:8, font:{size:10} }} },
+                plugins:{
+                    legend:{ position:'bottom', labels:{ usePointStyle:true, padding:8, font:{size:10} } },
+                    tooltip:{ callbacks:{ label: ctx => ` ${ctx.dataset.label}: ${fmtK(ctx.parsed.y)}` }}
+                },
                 scales:{
                     x:{ stacked:true, grid:{display:false}, ticks:{font:{size:10}} },
                     y:{ stacked:true, ticks:{ callback: v=>fmt(v), font:{size:10} }, grid:{color:'#E8E0F5'} }
@@ -861,7 +1056,7 @@ class Dashboard {
                     legend:{ position:'bottom', labels:{ usePointStyle:true, padding:8, font:{size:10.5} } },
                     tooltip:{ callbacks:{ label: ctx => {
                         const total = ctx.dataset.data.reduce((a,b)=>a+b,0);
-                        return ` ${ctx.label}: ${fmt(ctx.parsed)} (${(ctx.parsed/total*100).toFixed(1)}%)`;
+                        return ` ${ctx.label}: ${fmtK(ctx.parsed)} (${(ctx.parsed/total*100).toFixed(1)}%)`;
                     }}}
                 }
             }
@@ -887,9 +1082,9 @@ class Dashboard {
 
         // Net income
         this.charts.netincome.data.labels = labels;
-        this.charts.netincome.data.datasets[0].data = d.map(x=>x.netIncome);
-        this.charts.netincome.data.datasets[0].backgroundColor = d.map(x=>x.netIncome>=0?'#16a34a99':'#F6025E66');
-        this.charts.netincome.data.datasets[0].borderColor = d.map(x=>x.netIncome>=0?'#16a34a':'#F6025E');
+        this.charts.netincome.data.datasets[0].data = d.map(x=>x.netOperatingIncome);
+        this.charts.netincome.data.datasets[0].backgroundColor = d.map(x=>x.netOperatingIncome>=0?'#16a34a99':'#F6025E66');
+        this.charts.netincome.data.datasets[0].borderColor = d.map(x=>x.netOperatingIncome>=0?'#16a34a':'#F6025E');
         this.charts.netincome.update('none');
 
         // Margins
@@ -915,7 +1110,7 @@ class Dashboard {
             interaction:{ mode:'index', intersect:false },
             plugins:{
                 legend:{ position:'top', labels:{ usePointStyle:true, padding:16, font:{size:11} } },
-                tooltip:{ callbacks:{ label: ctx => ` ${ctx.dataset.label}: ${fmt(ctx.parsed.y)}` }}
+                tooltip:{ callbacks:{ label: ctx => ` ${ctx.dataset.label}: ${fmtK(ctx.parsed.y)}` }}
             },
             scales:{
                 x:{ grid:{display:false}, ticks:{font:{size:10}} },
@@ -958,53 +1153,99 @@ class Dashboard {
         const periodLabel = year==='all' ? 'Jan 2023 – Dec 2025' : `Full Year ${year}`;
         document.getElementById('tbl-period').textContent = periodLabel;
 
-        function row(label, val, pctOf, indent=false, bold=false, cls='') {
+        // --- Budget aggregation for this filtered period ---
+        let hasBud = false;
+        const bSums = {};
+        if (year === '2023' || year === '2024' || year === '2025' || year === '2026') {
+            const targetMonths = RAW.filter(x => x.month.includes(year)).map(x => x.month);
+            const buds = targetMonths.map(m => getBudgetMonth(m)).filter(Boolean);
+            if (buds.length) {
+                hasBud = true;
+                const bFields = ['totalIncome','totalCOGS','grossProfit','totalExpenses','netIncome',
+                                 'advisoryRevenue','equipmentRevenue','fiservCommissions',
+                                 'personnelExpenses','facilities','professionalFees','travelMeals',
+                                 'itCosts','marketing','insurance','officeSupplies','feesDues'];
+                bFields.forEach(f => { bSums[f] = buds.reduce((s,b) => s + (b[f]||0), 0); });
+                bSums.netOperatingIncome = bSums.grossProfit - bSums.totalExpenses;
+                bSums._equipCOGS = bSums.totalCOGS - bSums.fiservCommissions;
+                // Combined processing revenue (Fiserv+Payroc combined in budget)
+                bSums.processingRevenue = buds.reduce((s,b) => s + (b.processingRevenue||0), 0);
+            }
+        }
+        const cols = hasBud ? 5 : 3;
+
+        function row(label, val, pctOf, bVal, isExp, indent=false, bold=false, cls='') {
             const pct = pctOf>0 ? (val/pctOf*100) : null;
             const pctStr = pct!==null ? fmt(pct,'pct1') : '';
-            const clsStr = [indent?'indent':'', bold?'bold':'', cls].filter(Boolean).join(' ');
-            return `<tr class="${cls}">
-                <td class="${clsStr}">${label}</td>
+            const clsStr = [indent?'indent':'', bold?'bold':''].filter(Boolean).join(' ');
+            let html = `<tr class="${cls}"><td class="${clsStr}">${label}</td>
                 <td class="num ${bold?'bold':''}" style="color:${val<0?'#F6025E':''}">${fmt(val)}</td>
-                <td class="num" style="color:var(--muted)">${pctStr}</td>
-            </tr>`;
+                <td class="num" style="color:var(--muted)">${pctStr}</td>`;
+            if (hasBud) {
+                const bStr = bVal!==null && bVal!==undefined ? fmt(bVal) : '—';
+                html += `<td class="num col-bud" style="color:${bVal<0?'#F6025E':''}">${bStr}</td>`;
+                html += `<td class="num">${bVal!==null&&bVal!==undefined ? fmtBudVarShort(val,bVal,isExp) : '<span class="bud-neu">—</span>'}</td>`;
+            }
+            html += '</tr>';
+            return html;
+        }
+
+        const thead = hasBud
+            ? `<tr><th>Line Item</th><th class="num">Actual</th><th class="num">% Rev</th><th class="num th-bud">Budget</th><th class="num th-delta-bud">$ vs Budget</th></tr>`
+            : `<tr><th>Line Item</th><th class="num">Amount</th><th class="num">% of Revenue</th></tr>`;
+
+        const secSpan = hasBud ? 5 : 3;
+        const secRow = (label) => `<tr class="section-header"><td colspan="${secSpan}">${label}</td></tr>`;
+
+        // Helper to build a standard data row
+        function budRow(label, val, pctOf, bVal, isExp, cls, labelCls) {
+            const pct    = pctOf > 0 ? (val/pctOf*100) : null;
+            const pctStr = pct !== null ? fmt(pct,'pct1') : '';
+            let html = `<tr class="${cls}"><td class="${labelCls}">${label}</td>
+                <td class="num ${cls==='total-row'||cls==='gp-row'||cls==='ni-row'?'bold':''}" style="color:${val<0?'#F6025E':''}">${fmt(val)}</td>
+                <td class="num" style="color:var(--muted)">${pctStr}</td>`;
+            if (hasBud) {
+                const bStr = bVal !== null && bVal !== undefined ? fmt(bVal) : '—';
+                const bColor = bVal !== null && bVal < 0 ? '#F6025E' : '';
+                html += `<td class="num col-bud ${cls==='total-row'||cls==='gp-row'||cls==='ni-row'?'bold':''}" style="color:${bColor}">${bStr}</td>`;
+                html += `<td class="num">${bVal !== null ? fmtBudVarShort(val, bVal, isExp) : '<span class="bud-neu">—</span>'}</td>`;
+            }
+            return html + '</tr>';
         }
 
         const html = `<table>
-            <thead><tr><th>Line Item</th><th class="num">Amount</th><th class="num">% of Revenue</th></tr></thead>
+            <thead>${thead}</thead>
             <tbody>
-                <tr class="section-header"><td colspan="3">Revenue</td></tr>
-                ${row('Fiserv Processing Revenue', fiservRev, totalRev, true)}
-                ${row('Payroc Processing Revenue', payrocRev, totalRev, true)}
-                ${row('Advisory / SaaS Revenue', advisoryRev, totalRev, true)}
-                ${row('Equipment Revenue', equipRev, totalRev, true)}
-                <tr class="total-row">${row('Total Revenue', totalRev, totalRev, false, true)}</tr>
+                ${secRow('Revenue')}
+                ${budRow('Processing Revenue', fiservRev + payrocRev, totalRev, hasBud ? bSums.processingRevenue : null, false, '', 'indent')}
+                ${budRow('Advisory / SaaS Revenue', advisoryRev, totalRev, hasBud ? bSums.advisoryRevenue : null, false, '', 'indent')}
+                ${budRow('Equipment Revenue', equipRev, totalRev, hasBud ? bSums.equipmentRevenue : null, false, '', 'indent')}
+                ${budRow('Total Revenue', totalRev, totalRev, hasBud ? bSums.totalIncome : null, false, 'total-row', 'bold')}
 
-                <tr class="section-header"><td colspan="3">Cost of Goods Sold</td></tr>
-                ${row('Fiserv Commissions', fiservComm, totalRev, true)}
-                ${row('Equipment & Other COGS', equipCost, totalRev, true)}
-                <tr class="total-row">${row('Total COGS', totalCOGS, totalRev, false, true)}</tr>
+                ${secRow('Cost of Goods Sold')}
+                ${budRow('Fiserv Commissions', fiservComm, totalRev, hasBud ? bSums.fiservCommissions : null, true, '', 'indent')}
+                ${budRow('Equipment & Other COGS', equipCost, totalRev, hasBud ? bSums._equipCOGS : null, true, '', 'indent')}
+                ${budRow('Total COGS', totalCOGS, totalRev, hasBud ? bSums.totalCOGS : null, true, 'total-row', 'bold')}
 
-                <tr class="gp-row">${row('Gross Profit', gp, totalRev, false, true, 'gp-row')}</tr>
+                ${budRow('Gross Profit', gp, totalRev, hasBud ? bSums.grossProfit : null, false, 'gp-row', 'bold')}
 
-                <tr class="section-header"><td colspan="3">Operating Expenses</td></tr>
-                ${row('Personnel (Wages & Benefits)', personnel, totalRev, true)}
-                ${row('Travel, Meals & Entertainment', travel, totalRev, true)}
-                ${row('Marketing & Advertising', mktg, totalRev, true)}
-                ${row('Professional Fees (Legal/Acctg)', profFees, totalRev, true)}
-                ${row('IT & Technology', itCosts, totalRev, true)}
-                ${row('Facilities & Rent', facilities, totalRev, true)}
-                ${row('Insurance', insurance, totalRev, true)}
-                ${row('Fees, Dues & Licenses', fees, totalRev, true)}
-                ${row('Office Supplies', office, totalRev, true)}
-                <tr class="total-row">${row('Total Operating Expenses', totalOpEx, totalRev, false, true)}</tr>
+                ${secRow('Operating Expenses')}
+                ${budRow('Personnel (Wages & Benefits)', personnel, totalRev, hasBud ? bSums.personnelExpenses : null, true, '', 'indent')}
+                ${budRow('Travel, Meals & Entertainment', travel, totalRev, hasBud ? bSums.travelMeals : null, true, '', 'indent')}
+                ${budRow('Marketing & Advertising', mktg, totalRev, hasBud ? bSums.marketing : null, true, '', 'indent')}
+                ${budRow('Professional Fees (Legal/Acctg)', profFees, totalRev, hasBud ? bSums.professionalFees : null, true, '', 'indent')}
+                ${budRow('IT & Technology', itCosts, totalRev, hasBud ? bSums.itCosts : null, true, '', 'indent')}
+                ${budRow('Facilities & Rent', facilities, totalRev, hasBud ? bSums.facilities : null, true, '', 'indent')}
+                ${budRow('Insurance', insurance, totalRev, hasBud ? bSums.insurance : null, true, '', 'indent')}
+                ${budRow('Fees, Dues & Licenses', fees, totalRev, hasBud ? bSums.feesDues : null, true, '', 'indent')}
+                ${budRow('Office Supplies', office, totalRev, hasBud ? bSums.officeSupplies : null, true, '', 'indent')}
+                ${budRow('Total Operating Expenses', totalOpEx, totalRev, hasBud ? bSums.totalExpenses : null, true, 'total-row', 'bold')}
+                ${budRow('EBITDA', noi, totalRev, hasBud ? bSums.netOperatingIncome : null, false, 'total-row', 'bold')}
 
-                <tr class="total-row">${row('Net Operating Income', noi, totalRev, false, true, noi>=0?'':'neg-row')}</tr>
-
-                <tr class="section-header"><td colspan="3">Other Income / Expense</td></tr>
-                ${row('Other Income (Interest, Ext.)', otherInc, totalRev, true)}
-                ${row('Other Expenses (D&A, Legal, Amort.)', otherExp, totalRev, true)}
-
-                <tr class="ni-row"><td class="bold">Net Income</td><td class="num bold" style="color:${ni>=0?'#16a34a':'#F6025E'}">${fmt(ni)}</td><td class="num bold" style="color:var(--muted)">${(ni/totalRev*100).toFixed(1)}%</td></tr>
+                ${secRow('Other Income / Expense')}
+                ${budRow('Other Income (Interest, Ext.)', otherInc, totalRev, null, false, '', 'indent')}
+                ${budRow('Other Expenses (D&A, Legal, Amort.)', otherExp, totalRev, null, true, '', 'indent')}
+                ${budRow('Net Income', ni, totalRev, hasBud ? bSums.netIncome : null, false, 'ni-row', 'bold')}
             </tbody>
         </table>`;
 
@@ -1015,18 +1256,55 @@ class Dashboard {
 const dash = new Dashboard();
 
 // ============================================================
-// TAB SWITCHING
+// UNIFIED PERIOD SELECTOR
 // ============================================================
-function switchTab(name, btn) {
-    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
-    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-    document.getElementById('tab-' + name).classList.add('active');
-    btn.classList.add('active');
-    // Show/hide overview filters
-    const filters = document.querySelector('.filters');
-    if (filters) filters.style.display = name === 'overview' ? 'flex' : 'none';
-    if (name === 'compare')  cmpDash.render();
-    if (name === 'quarterly') qtrDash.render();
+function updatePeriodOptions() {
+    const type = document.getElementById('pt-type').value;
+    const sel  = document.getElementById('pt-period');
+    sel.innerHTML = '';
+    if (type === 'year') {
+        [
+            { value:'2026', text:'2026 YTD' },
+            { value:'2025', text:'2025' },
+            { value:'2024', text:'2024' },
+            { value:'2023', text:'2023' },
+            { value:'ttm',  text:'TTM (Last 12 Months)' },
+            { value:'all',  text:'All Years' },
+        ].forEach(({ value, text }) => {
+            const o = document.createElement('option');
+            o.value = value; o.textContent = text; sel.appendChild(o);
+        });
+    } else if (type === 'month') {
+        [...RAW].reverse().forEach(d => {
+            const o = document.createElement('option');
+            o.value = d.month; o.textContent = d.month; sel.appendChild(o);
+        });
+    } else if (type === 'quarter') {
+        [...QUARTERLY].reverse().forEach(d => {
+            const o = document.createElement('option');
+            o.value = d.month; o.textContent = d.month; sel.appendChild(o);
+        });
+    }
+}
+
+function masterRender() {
+    const type   = document.getElementById('pt-type').value;
+    const period = document.getElementById('pt-period').value;
+    // Hide all content sections
+    document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
+    if (type === 'year') {
+        document.getElementById('f-year').value = period;
+        document.getElementById('sec-overview').classList.add('active');
+        dash.filter();
+    } else if (type === 'month') {
+        document.getElementById('cmp-month').value = period;
+        document.getElementById('sec-compare').classList.add('active');
+        cmpDash.render();
+    } else if (type === 'quarter') {
+        document.getElementById('qtr-period').value = period;
+        document.getElementById('sec-quarterly').classList.add('active');
+        qtrDash.render();
+    }
 }
 
 // ============================================================
@@ -1106,115 +1384,165 @@ class ComparisonDashboard {
         const curr = this.getMonthData(sel);
         const mom = this.getPriorMonth(sel);
         const yoy = this.getPriorYearMonth(sel);
+        const bud = getBudgetMonth(sel);
         if (!curr) return;
 
-        this.renderChips(sel, mom, yoy);
-        this.renderKPIs(curr, mom, yoy);
-        this.renderCharts(curr, mom, yoy);
-        this.renderTable(curr, mom, yoy);
+        this.renderChips(sel, mom, yoy, bud);
+        this.renderKPIs(curr, mom, yoy, bud);
+        this.renderCharts(curr, mom, yoy, bud);
+        this.renderTable(curr, mom, yoy, bud);
         document.getElementById('cmp-tbl-title').textContent =
-            `P&L Detail: ${sel}${mom?' vs '+mom.month:''}${yoy?' vs '+yoy.month:''}`;
+            `P&L Detail: ${sel}${mom?' vs '+mom.month:''}${yoy?' vs '+yoy.month:''}${bud?' vs Budget':''}`;
         this.ready = true;
     }
 
-    renderChips(sel, mom, yoy) {
+    renderChips(sel, mom, yoy, bud) {
         const html = `
             <div class="chip chip-sel"><span class="chip-dot" style="background:#22004B"></span>${sel}</div>
             ${mom ? `<div class="chip chip-mom"><span class="chip-dot" style="background:#FF6A00"></span>vs ${mom.month} (MoM)</div>` : ''}
             ${yoy ? `<div class="chip chip-yoy"><span class="chip-dot" style="background:#16a34a"></span>vs Same Month Prior Year (${yoy.month})</div>` : ''}
+            ${bud ? `<div class="chip chip-bud"><span class="chip-dot" style="background:#16a34a"></span>vs Budget</div>` : ''}
         `;
         document.getElementById('cmp-chips').innerHTML = html;
     }
 
-    renderKPIs(curr, mom, yoy) {
+    renderKPIs(curr, mom, yoy, bud) {
         const keys = [
-            { key:'totalIncome', label:'Revenue', exp:false },
-            { key:'grossProfit', label:'Gross Profit', exp:false },
-            { key:'totalExpenses', label:'Operating Expenses', exp:true },
-            { key:'netIncome', label:'Net Income', exp:false },
+            { key:'totalIncome',        label:'Revenue',             exp:false },
+            { key:'totalCOGS',          label:'Total COGS',          exp:true  },
+            { key:'grossProfit',        label:'Gross Profit',        exp:false },
+            { key:'totalExpenses',      label:'Operating Expenses',  exp:true  },
+            { key:'netOperatingIncome', label:'EBITDA',              exp:false },
+            { key:'cashFlow',           label:'Cash Flow',           exp:false, dummy:true, dummyVal:148500 },
         ];
 
         const html = keys.map(k => {
-            const val = curr[k.key] || 0;
-            const gpPct = k.key === 'grossProfit' ? (curr.totalIncome > 0 ? val/curr.totalIncome*100 : 0) : null;
-            const momD = mom ? this.delta(curr, mom, k.key) : { abs:null, pct:null };
-            const yoyD = yoy ? this.delta(curr, yoy, k.key) : { abs:null, pct:null };
+            const val = k.dummy ? k.dummyVal : (curr[k.key] || 0);
+            const revPct = (!k.dummy && k.key !== 'totalIncome') ? (curr.totalIncome > 0 ? val/curr.totalIncome*100 : 0) : null;
+            const momD = (!k.dummy && mom) ? this.delta(curr, mom, k.key) : { abs:null, pct:null };
+            const yoyD = (!k.dummy && yoy) ? this.delta(curr, yoy, k.key) : { abs:null, pct:null };
+            const bv   = (!k.dummy && bud) ? getBudgetVal(bud, k.key) : null;
 
+            let budRow = '';
+            if (bud && bv !== null) {
+                budRow = `<div class="cmp-kpi-row" style="border-top:1px dashed rgba(22,163,74,.3);margin-top:10px;padding-top:8px;">
+                    <span style="color:#14532d;font-weight:600;">vs Budget: ${fmt(bv)}</span>
+                    ${fmtBudVar(val, bv, k.exp)}
+                </div>`;
+            }
+
+            const dummyBadge = k.dummy ? `<span style="font-size:9px;font-weight:700;padding:1px 5px;border-radius:4px;background:rgba(75,63,255,.12);color:#4B3FFF;margin-left:5px;vertical-align:middle;letter-spacing:.3px;">PLACEHOLDER</span>` : '';
+            const hasRows = budRow || (!k.dummy && (mom || yoy));
             return `<div class="cmp-kpi">
-                <div class="cmp-kpi-label">${k.label}</div>
-                <div class="cmp-kpi-main" style="color:${val<0?'#F6025E':''}">${fmt(val)}${gpPct!==null?`<span style="font-size:13px;font-weight:500;color:var(--muted);margin-left:6px;">${gpPct.toFixed(1)}%</span>`:''}</div>
-                ${mom ? `<div class="cmp-kpi-row"><span>vs ${mom.month}</span>${this.fmtDelta(momD, k.exp)}</div>` : ''}
-                ${yoy ? `<div class="cmp-kpi-row"><span>vs ${yoy.month}</span>${this.fmtDelta(yoyD, k.exp)}</div>` : ''}
+                <div class="cmp-kpi-label">${k.label}${dummyBadge}</div>
+                <div class="cmp-kpi-main" style="color:${val<0?'#F6025E':''}">${fmt(val)}${revPct!==null?`<span style="font-size:13px;font-weight:500;color:var(--muted);margin-left:6px;">${revPct.toFixed(1)}%</span>`:''}</div>
+                ${hasRows ? '<hr class="cmp-kpi-divider">' : ''}
+                ${budRow}
+                ${(!k.dummy && mom) ? `<div class="cmp-kpi-row"><span>vs ${mom.month}</span>${this.fmtDelta(momD, k.exp)}</div>` : ''}
+                ${(!k.dummy && yoy) ? `<div class="cmp-kpi-row"><span>vs ${yoy.month}</span>${this.fmtDelta(yoyD, k.exp)}</div>` : ''}
             </div>`;
         }).join('');
         document.getElementById('cmp-kpis').innerHTML = html;
     }
 
-    renderCharts(curr, mom, yoy) {
-        const periods = [curr.month, mom ? mom.month : null, yoy ? yoy.month : null].filter(Boolean);
-        const pColors = ['#22004B','#FF6A00','#16a34a'];
+    renderCharts(curr, mom, yoy, bud) {
+        const pColors = ['#22004B','#FF6A00','#4B3FFF'];
+        const periods = [curr, mom, yoy].filter(Boolean);
 
-        // Revenue/COGS/GP bar chart
-        const revData = {
-            labels: ['Revenue', 'COGS', 'Gross Profit'],
-            datasets: [curr, mom, yoy].filter(Boolean).map((d,i) => ({
-                label: d.month,
-                data: [d.totalIncome, d.totalCOGS, d.grossProfit],
-                backgroundColor: pColors[i] + 'cc',
-                borderColor: pColors[i],
-                borderWidth: 1,
-                borderRadius: 4
-            }))
-        };
-
-        // OpEx breakdown
-        const expCats = ['personnelExpenses','travelMeals','marketing','professionalFees','itCosts','facilities'];
-        const expLabels = ['Personnel','Travel & Meals','Marketing','Prof. Fees','IT','Facilities'];
-        const expData = {
-            labels: expLabels,
-            datasets: [curr, mom, yoy].filter(Boolean).map((d,i) => ({
-                label: d.month,
-                data: expCats.map(k => Math.max(0, d[k]||0)),
-                backgroundColor: pColors[i] + 'cc',
-                borderColor: pColors[i],
-                borderWidth: 1,
-                borderRadius: 4
-            }))
-        };
-
-        const barOpts = {
-            responsive:true, maintainAspectRatio:false,
-            interaction:{ mode:'index', intersect:false },
-            plugins:{ legend:{ position:'top', labels:{ usePointStyle:true, padding:12, font:{size:11} }}},
-            scales:{
-                x:{ grid:{display:false}, ticks:{font:{size:11}} },
-                y:{ ticks:{ callback:v=>fmt(v), font:{size:10} }, grid:{color:'#E8E0F5'} }
+        // Plugin: draws a horizontal budget marker line exactly over the selected month's bar
+        const budgetMarkerPlugin = {
+            id: 'budgetMarkersComp',
+            afterDatasetsDraw(chart) {
+                const bvs = chart.options.budgetValues;
+                if (!bvs) return;
+                const { ctx, scales: { y } } = chart;
+                const meta0 = chart.getDatasetMeta(0); // dataset 0 = selected month bars
+                if (!meta0 || !meta0.data.length) return;
+                ctx.save();
+                ctx.strokeStyle = '#16a34a';
+                ctx.lineWidth = 3;
+                ctx.setLineDash([]);
+                bvs.forEach((bv, i) => {
+                    const bar = meta0.data[i];
+                    if (!bar || bv == null) return;
+                    const yPx = y.getPixelForValue(bv);
+                    const hw = bar.width / 2;
+                    ctx.beginPath();
+                    ctx.moveTo(bar.x - hw, yPx);
+                    ctx.lineTo(bar.x + hw, yPx);
+                    ctx.stroke();
+                });
+                ctx.restore();
             }
         };
 
-        if (this.charts.revbar) {
-            this.charts.revbar.data = revData;
-            this.charts.revbar.update('none');
-        } else {
-            this.charts.revbar = new Chart(document.getElementById('cmp-c-revbar').getContext('2d'), { type:'bar', data:revData, options:barOpts });
-        }
+        // Revenue/COGS/GP bar chart
+        const revBarDs = periods.map((d,i) => ({
+            label: d.month, type:'bar',
+            data: [d.totalIncome, d.totalCOGS, d.grossProfit],
+            backgroundColor: pColors[i]+'cc', borderColor: pColors[i], borderWidth:1, borderRadius:4
+        }));
+        // Fake line dataset — null data so nothing renders, just provides the legend entry
+        if (bud) revBarDs.push({
+            label: 'Budget Target', type:'line', showLine:false,
+            data: [null, null, null],
+            pointStyle:'line', pointRadius:10, borderColor:'#16a34a', backgroundColor:'#16a34a'
+        });
+        const revData = { labels: ['Revenue', 'COGS', 'Gross Profit'], datasets: revBarDs };
+        const revBudVals = bud ? [bud.totalIncome, bud.totalCOGS, bud.grossProfit] : null;
 
-        if (this.charts.expbar) {
-            this.charts.expbar.data = expData;
-            this.charts.expbar.update('none');
-        } else {
-            this.charts.expbar = new Chart(document.getElementById('cmp-c-expbar').getContext('2d'), { type:'bar', data:expData, options:barOpts });
-        }
+        // OpEx breakdown bar chart
+        const expCats   = ['personnelExpenses','travelMeals','marketing','professionalFees','itCosts','facilities'];
+        const expLabels = ['Personnel','Travel & Meals','Marketing','Prof. Fees','IT','Facilities'];
+        const expBarDs = periods.map((d,i) => ({
+            label: d.month, type:'bar',
+            data: expCats.map(k => Math.max(0, d[k]||0)),
+            backgroundColor: pColors[i]+'cc', borderColor: pColors[i], borderWidth:1, borderRadius:4
+        }));
+        if (bud) expBarDs.push({
+            label: 'Budget Target', type:'line', showLine:false,
+            data: expCats.map(() => null),
+            pointStyle:'line', pointRadius:10, borderColor:'#16a34a', backgroundColor:'#16a34a'
+        });
+        const expData = { labels: expLabels, datasets: expBarDs };
+        const expBudVals = bud ? expCats.map(k => Math.max(0, getBudgetVal(bud, k) || 0)) : null;
+
+        const makeOpts = (budVals) => ({
+            responsive:true, maintainAspectRatio:false,
+            interaction:{ mode:'index', intersect:false },
+            plugins:{
+                legend:{ position:'top', labels:{ usePointStyle:true, padding:12, font:{size:11} }},
+                tooltip:{ callbacks:{ label: ctx => ctx.parsed.y == null ? null : ` ${ctx.dataset.label}: ${fmtK(ctx.parsed.y)}` }}
+            },
+            scales:{
+                x:{ grid:{display:false}, ticks:{font:{size:11}} },
+                y:{ ticks:{ callback:v=>fmt(v), font:{size:10} }, grid:{color:'#E8E0F5'} }
+            },
+            budgetValues: budVals
+        });
+
+        // Destroy and recreate so plugin closure always has fresh budget data
+        if (this.charts.revbar) { this.charts.revbar.destroy(); this.charts.revbar = null; }
+        if (this.charts.expbar) { this.charts.expbar.destroy(); this.charts.expbar = null; }
+
+        this.charts.revbar = new Chart(
+            document.getElementById('cmp-c-revbar').getContext('2d'),
+            { type:'bar', data:revData, options:makeOpts(revBudVals), plugins:[budgetMarkerPlugin] }
+        );
+        this.charts.expbar = new Chart(
+            document.getElementById('cmp-c-expbar').getContext('2d'),
+            { type:'bar', data:expData, options:makeOpts(expBudVals), plugins:[budgetMarkerPlugin] }
+        );
     }
 
-    renderTable(curr, mom, yoy) {
+    renderTable(curr, mom, yoy, bud) {
         const momLabel = mom ? mom.month : '—';
         const yoyLabel = yoy ? yoy.month : '—';
+        const hasBud   = !!bud;
 
         const LINES = [
             { section:'Revenue' },
-            { key:'fiservRevenue',   label:'Fiserv Processing Revenue', indent:true },
-            { key:'payrocRevenue',   label:'Payroc Processing Revenue', indent:true },
+            { derivedKey:'processingRevenue', label:'Processing Revenue', indent:true },
             { key:'advisoryRevenue', label:'Advisory / SaaS Revenue', indent:true },
             { key:'equipmentRevenue',label:'Equipment Revenue', indent:true },
             { key:'totalIncome',     label:'Total Revenue', bold:true, totalRow:true },
@@ -1234,7 +1562,7 @@ class ComparisonDashboard {
             { key:'feesDues',          label:'Fees, Dues & Licenses', indent:true, exp:true },
             { key:'officeSupplies',    label:'Office Supplies', indent:true, exp:true },
             { key:'totalExpenses',     label:'Total Operating Expenses', bold:true, totalRow:true, exp:true },
-            { key:'netOperatingIncome',label:'Net Operating Income', bold:true, totalRow:true },
+            { key:'netOperatingIncome',label:'EBITDA', bold:true, totalRow:true },
             { section:'Below the Line' },
             { key:'totalOtherIncome',  label:'Other Income', indent:true },
             { key:'totalOtherExpenses',label:'Other Expenses (D&A, Legal, Amort.)', indent:true, exp:true },
@@ -1243,6 +1571,7 @@ class ComparisonDashboard {
 
         function getVal(d, line) {
             if (!d) return null;
+            if (line.derivedKey === 'processingRevenue') return (d.fiservRevenue||0) + (d.payrocRevenue||0);
             if (line.derivedKey === 'equipCOGS') return (d.totalCOGS||0) - (d.fiservCommissions||0);
             if (line.derivedKey === 'grossMarginPct') return d.totalIncome > 0 ? d.grossProfit/d.totalIncome*100 : 0;
             return d[line.key] !== undefined ? (d[line.key]||0) : null;
@@ -1253,8 +1582,11 @@ class ComparisonDashboard {
 
         let thead = `<tr>
             <th style="min-width:220px">Line Item</th>
-            <th class="num th-sel" style="min-width:110px">${curr.month}</th>
-            <th class="num th-sel" style="min-width:80px">% Rev</th>`;
+            <th class="num th-sel" style="min-width:110px">${curr.month}</th>`;
+        if (hasBud) thead += `
+            <th class="num th-bud" style="min-width:110px">Budget</th>
+            <th class="num th-delta-bud" style="min-width:95px">$ vs Bud</th>
+            <th class="num th-delta-bud" style="min-width:70px">% vs Bud</th>`;
         if (hasMom) thead += `
             <th class="num th-mom" style="min-width:110px">${momLabel}</th>
             <th class="num th-delta" style="min-width:95px">$ MoM</th>
@@ -1268,14 +1600,13 @@ class ComparisonDashboard {
         let tbody = '';
         LINES.forEach(line => {
             if (line.section) {
-                let colspan = 2 + (hasMom ? 3 : 0) + (hasYoy ? 3 : 0);
+                let colspan = 1 + (hasBud ? 3 : 0) + (hasMom ? 3 : 0) + (hasYoy ? 3 : 0);
                 tbody += `<tr class="section-header"><td colspan="${colspan}">${line.section}</td></tr>`;
                 return;
             }
             const v = getVal(curr, line);
             const mv = hasMom ? getVal(mom, line) : null;
             const yv = hasYoy ? getVal(yoy, line) : null;
-            const pct = curr.totalIncome > 0 && v !== null ? (v / curr.totalIncome * 100).toFixed(1) + '%' : '—';
             const momD = hasMom && mv !== null ? { abs: v - mv, pct: mv !== 0 ? (v - mv)/Math.abs(mv)*100 : null } : null;
             const yoyD = hasYoy && yv !== null ? { abs: v - yv, pct: yv !== 0 ? (v - yv)/Math.abs(yv)*100 : null } : null;
 
@@ -1284,9 +1615,16 @@ class ComparisonDashboard {
 
             let tr = `<tr class="${rowCls}">
                 <td class="${labelCls}">${line.label}</td>
-                <td class="num col-sel" style="color:${v<0?'#F6025E':''};${line.bold?'font-weight:700':''}">${v !== null ? fmt(v) : '—'}</td>
-                <td class="num" style="color:var(--muted);font-size:11.5px">${pct}</td>`;
+                <td class="num col-sel" style="color:${v<0?'#F6025E':''};${line.bold?'font-weight:700':''}">${v !== null ? fmt(v) : '—'}</td>`;
 
+            if (hasBud) {
+                const budKey = line.derivedKey === 'equipCOGS' ? '_equipCOGS' : (line.derivedKey || line.key);
+                const bv = getBudgetVal(bud, budKey);
+                const bColor = bv !== null && bv < 0 ? '#F6025E' : '';
+                tr += `<td class="num col-bud" style="color:${bColor}">${bv !== null ? fmt(bv) : '<span class="bud-neu">—</span>'}</td>`;
+                tr += `<td class="num">${bv !== null ? fmtBudVarShort(v, bv, line.exp) : '<span class="bud-neu">—</span>'}</td>`;
+                tr += `<td class="num">${bv !== null ? fmtBudVarPct(v, bv, line.exp) : '<span class="bud-neu">—</span>'}</td>`;
+            }
             if (hasMom) {
                 const deltaOk = momD !== null;
                 tr += `<td class="num col-mom" style="color:${mv<0?'#F6025E':''}">${mv !== null ? fmt(mv) : '—'}</td>`;
@@ -1399,88 +1737,149 @@ class QuarterlyDashboard {
         const curr = this.getData(key);
         const qoq  = this.getPriorQtr(key);
         const yoy  = this.getPriorYearQtr(key);
+        const bud  = getBudgetQuarter(key);
         if (!curr) return;
-        this.renderChips(curr, qoq, yoy);
-        this.renderKPIs(curr, qoq, yoy);
-        this.renderCharts(curr, qoq, yoy);
-        this.renderTable(curr, qoq, yoy);
+        this.renderChips(curr, qoq, yoy, bud);
+        this.renderKPIs(curr, qoq, yoy, bud);
+        this.renderCharts(curr, qoq, yoy, bud);
+        this.renderTable(curr, qoq, yoy, bud);
         document.getElementById('qtr-tbl-title').textContent =
-            `P&L Detail: ${key}${qoq?' vs '+qoq.month:''}${yoy?' vs '+yoy.month:''}`;
+            `P&L Detail: ${key}${qoq?' vs '+qoq.month:''}${yoy?' vs '+yoy.month:''}${bud?' vs Budget':''}`;
     }
 
-    renderChips(curr, qoq, yoy) {
+    renderChips(curr, qoq, yoy, bud) {
         document.getElementById('qtr-chips').innerHTML = `
             <div class="chip chip-sel"><span class="chip-dot" style="background:#22004B"></span>${curr.month}</div>
             ${qoq ? `<div class="chip chip-mom"><span class="chip-dot" style="background:#FF6A00"></span>vs ${qoq.month} (QoQ)</div>` : ''}
             ${yoy ? `<div class="chip chip-yoy"><span class="chip-dot" style="background:#16a34a"></span>vs Same Quarter Prior Year (${yoy.month})</div>` : ''}
+            ${bud ? `<div class="chip chip-bud"><span class="chip-dot" style="background:#16a34a"></span>vs Budget</div>` : ''}
         `;
     }
 
-    renderKPIs(curr, qoq, yoy) {
+    renderKPIs(curr, qoq, yoy, bud) {
         const keys = [
-            { key:'totalIncome',   label:'Revenue',            exp:false },
-            { key:'grossProfit',   label:'Gross Profit',       exp:false },
-            { key:'totalExpenses', label:'Operating Expenses', exp:true  },
-            { key:'netIncome',     label:'Net Income',         exp:false },
+            { key:'totalIncome',        label:'Revenue',             exp:false },
+            { key:'totalCOGS',          label:'Total COGS',          exp:true  },
+            { key:'grossProfit',        label:'Gross Profit',        exp:false },
+            { key:'totalExpenses',      label:'Operating Expenses',  exp:true  },
+            { key:'netOperatingIncome', label:'EBITDA',              exp:false },
+            { key:'cashFlow',           label:'Cash Flow',           exp:false, dummy:true, dummyVal:148500 },
         ];
         const html = keys.map(k => {
-            const val  = curr[k.key] || 0;
-            const gpPct = k.key==='grossProfit' ? (curr.totalIncome>0 ? val/curr.totalIncome*100 : 0) : null;
-            const qoqD = qoq ? this.delta(curr, qoq, k.key) : {abs:null,pct:null};
-            const yoyD = yoy ? this.delta(curr, yoy, k.key) : {abs:null,pct:null};
+            const val  = k.dummy ? k.dummyVal : (curr[k.key] || 0);
+            const revPct = (!k.dummy && k.key !== 'totalIncome') ? (curr.totalIncome > 0 ? val/curr.totalIncome*100 : 0) : null;
+            const qoqD = (!k.dummy && qoq) ? this.delta(curr, qoq, k.key) : {abs:null,pct:null};
+            const yoyD = (!k.dummy && yoy) ? this.delta(curr, yoy, k.key) : {abs:null,pct:null};
+            const bv   = (!k.dummy && bud) ? getBudgetVal(bud, k.key) : null;
+
+            let budRow = '';
+            if (bud && bv !== null) {
+                budRow = `<div class="cmp-kpi-row" style="border-top:1px dashed rgba(22,163,74,.3);margin-top:10px;padding-top:8px;">
+                    <span style="color:#14532d;font-weight:600;">vs Budget: ${fmt(bv)}</span>
+                    ${fmtBudVar(val, bv, k.exp)}
+                </div>`;
+            }
+
+            const dummyBadge = k.dummy ? `<span style="font-size:9px;font-weight:700;padding:1px 5px;border-radius:4px;background:rgba(75,63,255,.12);color:#4B3FFF;margin-left:5px;vertical-align:middle;letter-spacing:.3px;">PLACEHOLDER</span>` : '';
+            const hasRows = budRow || (!k.dummy && (qoq || yoy));
             return `<div class="cmp-kpi">
-                <div class="cmp-kpi-label">${k.label}</div>
-                <div class="cmp-kpi-main" style="color:${val<0?'#F6025E':''}">${fmt(val)}${gpPct!==null?`<span style="font-size:13px;font-weight:500;color:var(--muted);margin-left:6px;">${gpPct.toFixed(1)}%</span>`:''}</div>
-                ${qoq ? `<div class="cmp-kpi-row"><span>vs ${qoq.month}</span>${this.fmtDelta(qoqD, k.exp)}</div>` : ''}
-                ${yoy ? `<div class="cmp-kpi-row"><span>vs ${yoy.month}</span>${this.fmtDelta(yoyD, k.exp)}</div>` : ''}
+                <div class="cmp-kpi-label">${k.label}${dummyBadge}</div>
+                <div class="cmp-kpi-main" style="color:${val<0?'#F6025E':''}">${fmt(val)}${revPct!==null?`<span style="font-size:13px;font-weight:500;color:var(--muted);margin-left:6px;">${revPct.toFixed(1)}%</span>`:''}</div>
+                ${hasRows ? '<hr class="cmp-kpi-divider">' : ''}
+                ${budRow}
+                ${(!k.dummy && qoq) ? `<div class="cmp-kpi-row"><span>vs ${qoq.month}</span>${this.fmtDelta(qoqD, k.exp)}</div>` : ''}
+                ${(!k.dummy && yoy) ? `<div class="cmp-kpi-row"><span>vs ${yoy.month}</span>${this.fmtDelta(yoyD, k.exp)}</div>` : ''}
             </div>`;
         }).join('');
         document.getElementById('qtr-kpis').innerHTML = html;
     }
 
-    renderCharts(curr, qoq, yoy) {
-        const pColors = ['#22004B','#FF6A00','#16a34a'];
-        const periods = [curr, qoq, yoy].filter(Boolean);
+    renderCharts(curr, qoq, yoy, bud) {
+        const pColors = ['#22004B','#FF6A00','#4B3FFF'];
+        const qPeriods = [curr, qoq, yoy].filter(Boolean);
 
-        const revData = {
-            labels: ['Revenue','COGS','Gross Profit'],
-            datasets: periods.map((d,i) => ({
-                label: d.month,
-                data: [d.totalIncome, d.totalCOGS, d.grossProfit],
-                backgroundColor: pColors[i]+'cc', borderColor: pColors[i], borderWidth:1, borderRadius:4
-            }))
+        // Plugin: draws a horizontal budget marker line exactly over the selected quarter's bar
+        const budgetMarkerPlugin = {
+            id: 'budgetMarkersQtr',
+            afterDatasetsDraw(chart) {
+                const bvs = chart.options.budgetValues;
+                if (!bvs) return;
+                const { ctx, scales: { y } } = chart;
+                const meta0 = chart.getDatasetMeta(0); // dataset 0 = selected quarter bars
+                if (!meta0 || !meta0.data.length) return;
+                ctx.save();
+                ctx.strokeStyle = '#16a34a';
+                ctx.lineWidth = 3;
+                ctx.setLineDash([]);
+                bvs.forEach((bv, i) => {
+                    const bar = meta0.data[i];
+                    if (!bar || bv == null) return;
+                    const yPx = y.getPixelForValue(bv);
+                    const hw = bar.width / 2;
+                    ctx.beginPath();
+                    ctx.moveTo(bar.x - hw, yPx);
+                    ctx.lineTo(bar.x + hw, yPx);
+                    ctx.stroke();
+                });
+                ctx.restore();
+            }
         };
 
+        // Revenue/COGS/GP bar chart
+        const revDatasets = qPeriods.map((d,i) => ({
+            label: d.month, type:'bar',
+            data:[d.totalIncome, d.totalCOGS, d.grossProfit],
+            backgroundColor: pColors[i]+'cc', borderColor: pColors[i], borderWidth:1, borderRadius:4
+        }));
+        if (bud) revDatasets.push({
+            label:'Budget Target', type:'line', showLine:false,
+            data:[null, null, null],
+            pointStyle:'line', pointRadius:10, borderColor:'#16a34a', backgroundColor:'#16a34a'
+        });
+        const revData = { labels: ['Revenue','COGS','Gross Profit'], datasets: revDatasets };
+        const revBudVals = bud ? [bud.totalIncome, bud.totalCOGS, bud.grossProfit] : null;
+
+        // OpEx breakdown bar chart
         const expCats   = ['personnelExpenses','travelMeals','marketing','professionalFees','itCosts','facilities'];
         const expLabels = ['Personnel','Travel & Meals','Marketing','Prof. Fees','IT','Facilities'];
-        const expData = {
-            labels: expLabels,
-            datasets: periods.map((d,i) => ({
-                label: d.month,
-                data: expCats.map(k => Math.max(0, d[k]||0)),
-                backgroundColor: pColors[i]+'cc', borderColor: pColors[i], borderWidth:1, borderRadius:4
-            }))
-        };
+        const expDatasets = qPeriods.map((d,i) => ({
+            label: d.month, type:'bar',
+            data: expCats.map(k => Math.max(0, d[k]||0)),
+            backgroundColor: pColors[i]+'cc', borderColor: pColors[i], borderWidth:1, borderRadius:4
+        }));
+        if (bud) expDatasets.push({
+            label:'Budget Target', type:'line', showLine:false,
+            data: expCats.map(() => null),
+            pointStyle:'line', pointRadius:10, borderColor:'#16a34a', backgroundColor:'#16a34a'
+        });
+        const expData = { labels: expLabels, datasets: expDatasets };
+        const expBudVals = bud ? expCats.map(k => Math.max(0, getBudgetVal(bud,k)||0)) : null;
 
-        const opts = {
+        const makeOpts = (budVals) => ({
             responsive:true, maintainAspectRatio:false,
             interaction:{ mode:'index', intersect:false },
-            plugins:{ legend:{ position:'top', labels:{ usePointStyle:true, padding:12, font:{size:11} }}},
-            scales:{ x:{ grid:{display:false}, ticks:{font:{size:11}} }, y:{ ticks:{ callback:v=>fmt(v), font:{size:10} }, grid:{color:'#E8E0F5'} }}
-        };
+            plugins:{
+                legend:{ position:'top', labels:{ usePointStyle:true, padding:12, font:{size:11} }},
+                tooltip:{ callbacks:{ label: ctx => ctx.parsed.y == null ? null : ` ${ctx.dataset.label}: ${fmtK(ctx.parsed.y)}` }}
+            },
+            scales:{ x:{ grid:{display:false}, ticks:{font:{size:11}} }, y:{ ticks:{ callback:v=>fmt(v), font:{size:10} }, grid:{color:'#E8E0F5'} }},
+            budgetValues: budVals
+        });
 
-        if (this.charts.rev) { this.charts.rev.data = revData; this.charts.rev.update('none'); }
-        else { this.charts.rev = new Chart(document.getElementById('qtr-c-revbar').getContext('2d'), {type:'bar',data:revData,options:opts}); }
+        // Destroy and recreate so plugin closure always has fresh budget data
+        if (this.charts.rev) { this.charts.rev.destroy(); this.charts.rev = null; }
+        if (this.charts.exp) { this.charts.exp.destroy(); this.charts.exp = null; }
 
-        if (this.charts.exp) { this.charts.exp.data = expData; this.charts.exp.update('none'); }
-        else { this.charts.exp = new Chart(document.getElementById('qtr-c-expbar').getContext('2d'), {type:'bar',data:expData,options:opts}); }
+        this.charts.rev = new Chart(document.getElementById('qtr-c-revbar').getContext('2d'),
+            {type:'bar', data:revData, options:makeOpts(revBudVals), plugins:[budgetMarkerPlugin]});
+        this.charts.exp = new Chart(document.getElementById('qtr-c-expbar').getContext('2d'),
+            {type:'bar', data:expData, options:makeOpts(expBudVals), plugins:[budgetMarkerPlugin]});
     }
 
-    renderTable(curr, qoq, yoy) {
+    renderTable(curr, qoq, yoy, bud) {
         const LINES = [
             { section:'Revenue' },
-            { key:'fiservRevenue',    label:'Fiserv Processing Revenue', indent:true },
-            { key:'payrocRevenue',    label:'Payroc Processing Revenue', indent:true },
+            { derived:'processingRevenue', label:'Processing Revenue', indent:true },
             { key:'advisoryRevenue',  label:'Advisory / SaaS Revenue', indent:true },
             { key:'equipmentRevenue', label:'Equipment Revenue', indent:true },
             { key:'totalIncome',      label:'Total Revenue', bold:true, totalRow:true },
@@ -1500,7 +1899,7 @@ class QuarterlyDashboard {
             { key:'feesDues',          label:'Fees, Dues & Licenses', indent:true, exp:true },
             { key:'officeSupplies',    label:'Office Supplies', indent:true, exp:true },
             { key:'totalExpenses',      label:'Total Operating Expenses', bold:true, totalRow:true, exp:true },
-            { key:'netOperatingIncome', label:'Net Operating Income', bold:true, totalRow:true },
+            { key:'netOperatingIncome', label:'EBITDA', bold:true, totalRow:true },
             { section:'Below the Line' },
             { key:'totalOtherIncome',   label:'Other Income', indent:true },
             { key:'totalOtherExpenses', label:'Other Expenses (D&A, Legal, Amort.)', indent:true, exp:true },
@@ -1509,18 +1908,19 @@ class QuarterlyDashboard {
 
         const gv = (d, line) => {
             if (!d) return null;
+            if (line.derived === 'processingRevenue') return (d.fiservRevenue||0) + (d.payrocRevenue||0);
             if (line.derived === 'equipCOGS') return (d.totalCOGS||0) - (d.fiservCommissions||0);
             return d[line.key] !== undefined ? (d[line.key]||0) : null;
         };
 
-        const hasQoQ = !!qoq, hasYoY = !!yoy;
+        const hasQoQ = !!qoq, hasYoY = !!yoy, hasBud = !!bud;
         const qoqLabel = qoq ? qoq.month : '—';
         const yoyLabel = yoy ? yoy.month : '—';
 
         let thead = `<tr>
             <th style="min-width:220px">Line Item</th>
-            <th class="num th-sel" style="min-width:110px">${curr.month}</th>
-            <th class="num th-sel" style="min-width:80px">% Rev</th>`;
+            <th class="num th-sel" style="min-width:110px">${curr.month}</th>`;
+        if (hasBud) thead += `<th class="num th-bud" style="min-width:110px">Budget</th><th class="num th-delta-bud" style="min-width:95px">$ vs Bud</th><th class="num th-delta-bud" style="min-width:70px">% vs Bud</th>`;
         if (hasQoQ) thead += `<th class="num th-mom" style="min-width:110px">${qoqLabel}</th><th class="num th-delta" style="min-width:95px">$ QoQ</th><th class="num th-delta" style="min-width:70px">% QoQ</th>`;
         if (hasYoY) thead += `<th class="num th-yoy" style="min-width:110px">${yoyLabel}</th><th class="num th-delta" style="min-width:95px">$ YoY</th><th class="num th-delta" style="min-width:70px">% YoY</th>`;
         thead += '</tr>';
@@ -1528,14 +1928,13 @@ class QuarterlyDashboard {
         let tbody = '';
         LINES.forEach(line => {
             if (line.section) {
-                const span = 2 + (hasQoQ?3:0) + (hasYoY?3:0);
+                const span = 1 + (hasBud?3:0) + (hasQoQ?3:0) + (hasYoY?3:0);
                 tbody += `<tr class="section-header"><td colspan="${span}">${line.section}</td></tr>`;
                 return;
             }
             const v  = gv(curr, line);
             const qv = hasQoQ ? gv(qoq, line)  : null;
             const yv = hasYoY ? gv(yoy, line)   : null;
-            const pct = curr.totalIncome>0 && v!==null ? (v/curr.totalIncome*100).toFixed(1)+'%' : '—';
             const qD = hasQoQ && qv!==null ? { abs:v-qv, pct:qv!==0?(v-qv)/Math.abs(qv)*100:null } : null;
             const yD = hasYoY && yv!==null ? { abs:v-yv, pct:yv!==0?(v-yv)/Math.abs(yv)*100:null } : null;
 
@@ -1544,8 +1943,15 @@ class QuarterlyDashboard {
 
             let tr = `<tr class="${rowCls}">
                 <td class="${labelCls}">${line.label}</td>
-                <td class="num col-sel" style="color:${v<0?'#F6025E':''};${line.bold?'font-weight:700':''}">${v!==null?fmt(v):'—'}</td>
-                <td class="num" style="color:var(--muted);font-size:11.5px">${pct}</td>`;
+                <td class="num col-sel" style="color:${v<0?'#F6025E':''};${line.bold?'font-weight:700':''}">${v!==null?fmt(v):'—'}</td>`;
+            if (hasBud) {
+                const budKey = line.derived === 'equipCOGS' ? '_equipCOGS' : (line.derived || line.key);
+                const bv = getBudgetVal(bud, budKey);
+                const bColor = bv !== null && bv < 0 ? '#F6025E' : '';
+                tr += `<td class="num col-bud" style="color:${bColor}">${bv !== null ? fmt(bv) : '<span class="bud-neu">—</span>'}</td>`;
+                tr += `<td class="num">${bv !== null ? fmtBudVarShort(v, bv, line.exp) : '<span class="bud-neu">—</span>'}</td>`;
+                tr += `<td class="num">${bv !== null ? fmtBudVarPct(v, bv, line.exp) : '<span class="bud-neu">—</span>'}</td>`;
+            }
             if (hasQoQ) {
                 tr += `<td class="num col-mom" style="color:${qv<0?'#F6025E':''}">${qv!==null?fmt(qv):'—'}</td>`;
                 tr += `<td class="num">${qD?this.fmtDeltaShort(qD,line.exp):'<span class="delta-neu">—</span>'}</td>`;
@@ -1566,6 +1972,10 @@ class QuarterlyDashboard {
 }
 
 const qtrDash = new QuarterlyDashboard();
+
+// Initialize unified selector + render default view (2026 YTD)
+updatePeriodOptions();
+masterRender();
 </script>
 </body>
 </html>
