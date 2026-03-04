@@ -137,9 +137,14 @@ def process_pl_report(report: dict) -> list[dict]:
     for row in rows:
         _walk_row(row, month_cols, months)
 
-    # Sort by date, strip the index key, filter out empty months
+    # Sort by date, strip the index key, filter out empty months and invalid entries
+    # (e.g. QBO "Total" column, partial month entries like "Mar 1-4, 2026")
     result = sorted(months.values(), key=lambda r: _parse_date(r['month']))
-    return [r for r in result if r['totalIncome'] != 0 or r['netIncome'] != 0]
+    return [
+        r for r in result
+        if _parse_date(r['month']) > datetime.min
+        and (r['totalIncome'] != 0 or r['netIncome'] != 0)
+    ]
 
 
 # ── Recursive row walker ───────────────────────────────────────────────────────
