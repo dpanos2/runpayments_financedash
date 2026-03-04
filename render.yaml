@@ -1,0 +1,25 @@
+services:
+  - type: web
+    name: run-payments-dashboard
+    env: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn app:app --bind 0.0.0.0:$PORT --workers 1 --threads 2
+    disk:
+      name: data
+      mountPath: /data
+      sizeGB: 1
+    envVars:
+      - key: DATA_DIR
+        value: /data
+      - key: SECRET_KEY
+        generateValue: true
+      - key: QBO_CLIENT_ID
+        sync: false          # set manually in Render dashboard
+      - key: QBO_CLIENT_SECRET
+        sync: false
+      - key: QBO_REDIRECT_URI
+        sync: false          # e.g. https://your-app.onrender.com/auth/callback
+      - key: REFRESH_SECRET
+        generateValue: true  # copy this value for manual refresh URL
+      - key: QBO_ENVIRONMENT
+        value: production
