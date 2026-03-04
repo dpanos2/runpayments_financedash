@@ -1,0 +1,23 @@
+services:
+  - type: web
+    name: runpayments-financedash
+    env: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn app:app --bind 0.0.0.0:$PORT --workers 1 --threads 2
+    envVars:
+      - key: QBO_CLIENT_ID
+        sync: false
+      - key: QBO_CLIENT_SECRET
+        sync: false
+      - key: QBO_REDIRECT_URI
+        sync: false
+      - key: QBO_ENVIRONMENT
+        value: production
+      - key: SECRET_KEY
+        generateValue: true
+      - key: REFRESH_SECRET
+        sync: false
+      - key: DATA_DIR
+        value: ./data
+      - key: DATA_END_DATE
+        sync: false
