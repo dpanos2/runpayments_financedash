@@ -127,7 +127,7 @@ def _refresh_data():
 # ── Scheduler: auto-refresh on the 1st of each month at 6 AM ─────────────────
 
 scheduler = BackgroundScheduler(daemon=True)
-scheduler.add_job(_refresh_data, CronTrigger(day=1, hour=6, minute=0))
+scheduler.add_job(_refresh_data, CronTrigger(day=5-15, hour=6, minute=0))
 scheduler.start()
 
 
